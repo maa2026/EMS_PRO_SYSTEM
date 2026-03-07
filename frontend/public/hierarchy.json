@@ -1,0 +1,1873 @@
+{
+  "zones": {
+    "Braj–Agra Belt": [
+      "Agra",
+      "Etah",
+      "Firozabad",
+      "Hathras",
+      "Mathura"
+    ],
+    "Purvanchal South–Vindhya Link": [
+      "Bhadohi",
+      "Chandauli",
+      "Mirzapur",
+      "Sonbhadra",
+      "Varanasi"
+    ],
+    "Awadh South (Faith–Memory)": [
+      "Ambedkar Nagar",
+      "Ayodhya",
+      "Gonda",
+      "Pratapgarh",
+      "Sultanpur"
+    ],
+    "Central Doab (SP Core)": [
+      "Auraiya",
+      "Etawah",
+      "Kannauj",
+      "Kanpur Dehat",
+      "Kanpur Nagar"
+    ],
+    "NCR / Upper Doab Urban": [
+      "Aligarh",
+      "Bulandshahr",
+      "Gautam Buddha Nagar",
+      "Ghaziabad",
+      "Hapur"
+    ],
+    "South Doab–Bundelkhand Edge": [
+      "Banda",
+      "Chitrakoot",
+      "Fatehpur",
+      "Kaushambi",
+      "Prayagraj"
+    ],
+    "Upper Ganga–Kali Belt": [
+      "Farrukhabad",
+      "Hardoi",
+      "Kasganj",
+      "Mainpuri",
+      "Sitapur"
+    ],
+    "Awadh Central (Power–Perception)": [
+      "Amethi",
+      "Barabanki",
+      "Lucknow",
+      "Raebareli",
+      "Unnao"
+    ],
+    "Rohilkhand West (Minority Belt)": [
+      "Amroha",
+      "Bijnor",
+      "Moradabad",
+      "Rampur",
+      "Sambhal"
+    ],
+    "Rohilkhand East (Silent Swing)": [
+      "Bareilly",
+      "Budaun",
+      "Kheri",
+      "Pilibhit",
+      "Shahjahanpur"
+    ],
+    "Purvanchal Core (Azamgarh Spine)": [
+      "Azamgarh",
+      "Ballia",
+      "Ghazipur",
+      "Jaunpur",
+      "Mau"
+    ],
+    "Bundelkhand Core": [
+      "Hamirpur",
+      "Jalaun",
+      "Jhansi",
+      "Lalitpur",
+      "Mahoba"
+    ],
+    "Western Jat–Muslim Core": [
+      "Baghpat",
+      "Meerut",
+      "Muzaffarnagar",
+      "Saharanpur",
+      "Shamli"
+    ],
+    "Awadh North–Terai Border": [
+      "Bahraich",
+      "Balrampur",
+      "Maharajganj",
+      "Shrawasti",
+      "Siddharthnagar"
+    ],
+    "Gorakhpur–Basti Core": [
+      "Basti",
+      "Deoria",
+      "Gorakhpur",
+      "Kushinagar",
+      "Sant Kabir Nagar"
+    ]
+  },
+  "districts": {
+    "Agra": [
+      {
+        "name": "Agra Cantt.",
+        "type": "SC"
+      },
+      {
+        "name": "Agra North",
+        "type": "GEN"
+      },
+      {
+        "name": "Agra Rural",
+        "type": "SC"
+      },
+      {
+        "name": "Agra South",
+        "type": "GEN"
+      },
+      {
+        "name": "Bah",
+        "type": "GEN"
+      },
+      {
+        "name": "Etmadpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Fatehabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Fatehpur Sikri",
+        "type": "GEN"
+      },
+      {
+        "name": "Kheragarh",
+        "type": "GEN"
+      }
+    ],
+    "Varanasi": [
+      {
+        "name": "Ajagara",
+        "type": "SC"
+      },
+      {
+        "name": "Pindra",
+        "type": "GEN"
+      },
+      {
+        "name": "Rohaniya",
+        "type": "GEN"
+      },
+      {
+        "name": "Sevapuri",
+        "type": "GEN"
+      },
+      {
+        "name": "Shivpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Varanasi Cantt.",
+        "type": "GEN"
+      },
+      {
+        "name": "Varanasi North",
+        "type": "GEN"
+      },
+      {
+        "name": "Varanasi South",
+        "type": "GEN"
+      }
+    ],
+    "Ambedkar Nagar": [
+      {
+        "name": "Akbarpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Alapur",
+        "type": "SC"
+      },
+      {
+        "name": "Jalalpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Katehari",
+        "type": "GEN"
+      },
+      {
+        "name": "Tanda",
+        "type": "GEN"
+      }
+    ],
+    "Kanpur Dehat": [
+      {
+        "name": "Akbarpur - Raniya",
+        "type": "GEN"
+      },
+      {
+        "name": "Bhognipur",
+        "type": "GEN"
+      },
+      {
+        "name": "Rasulabad",
+        "type": "SC"
+      },
+      {
+        "name": "Sikandra",
+        "type": "GEN"
+      }
+    ],
+    "Etah": [
+      {
+        "name": "Aliganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Etah",
+        "type": "GEN"
+      },
+      {
+        "name": "Jalesar",
+        "type": "SC"
+      },
+      {
+        "name": "Marhara",
+        "type": "GEN"
+      }
+    ],
+    "Aligarh": [
+      {
+        "name": "Aligarh",
+        "type": "GEN"
+      },
+      {
+        "name": "Atrauli",
+        "type": "GEN"
+      },
+      {
+        "name": "Barauli",
+        "type": "GEN"
+      },
+      {
+        "name": "Chharra",
+        "type": "GEN"
+      },
+      {
+        "name": "Iglas",
+        "type": "SC"
+      },
+      {
+        "name": "Khair",
+        "type": "SC"
+      },
+      {
+        "name": "Koil",
+        "type": "GEN"
+      }
+    ],
+    "Prayagraj": [
+      {
+        "name": "Allahabad North",
+        "type": "GEN"
+      },
+      {
+        "name": "Allahabad South",
+        "type": "GEN"
+      },
+      {
+        "name": "Allahabad West",
+        "type": "GEN"
+      },
+      {
+        "name": "Bara",
+        "type": "SC"
+      },
+      {
+        "name": "Handia",
+        "type": "GEN"
+      },
+      {
+        "name": "Karachhana",
+        "type": "GEN"
+      },
+      {
+        "name": "Koraon",
+        "type": "SC"
+      },
+      {
+        "name": "Meja",
+        "type": "GEN"
+      },
+      {
+        "name": "Phaphamau",
+        "type": "GEN"
+      },
+      {
+        "name": "Phulpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Pratappur",
+        "type": "GEN"
+      },
+      {
+        "name": "Soraon",
+        "type": "SC"
+      }
+    ],
+    "Kasganj": [
+      {
+        "name": "Amanpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Kasganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Patiyali",
+        "type": "GEN"
+      }
+    ],
+    "Amethi": [
+      {
+        "name": "Amethi",
+        "type": "GEN"
+      },
+      {
+        "name": "Gauriganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Jagdishpur",
+        "type": "SC"
+      },
+      {
+        "name": "Tiloi",
+        "type": "GEN"
+      }
+    ],
+    "Farrukhabad": [
+      {
+        "name": "Amritpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Bhojpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Farrukhabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Kaimganj",
+        "type": "SC"
+      }
+    ],
+    "Amroha": [
+      {
+        "name": "Amroha",
+        "type": "GEN"
+      },
+      {
+        "name": "Dhanaura",
+        "type": "SC"
+      },
+      {
+        "name": "Hasanpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Naugawan Sadat",
+        "type": "GEN"
+      }
+    ],
+    "Bulandshahr": [
+      {
+        "name": "Anupshahr",
+        "type": "GEN"
+      },
+      {
+        "name": "Bulandshahr",
+        "type": "GEN"
+      },
+      {
+        "name": "Debai",
+        "type": "GEN"
+      },
+      {
+        "name": "Khurja",
+        "type": "SC"
+      },
+      {
+        "name": "Shikarpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Sikandrabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Syana",
+        "type": "GEN"
+      }
+    ],
+    "Bareilly": [
+      {
+        "name": "Aonla",
+        "type": "GEN"
+      },
+      {
+        "name": "Baheri",
+        "type": "GEN"
+      },
+      {
+        "name": "Bareilly",
+        "type": "GEN"
+      },
+      {
+        "name": "Bareilly Cantt.",
+        "type": "GEN"
+      },
+      {
+        "name": "Bhojipura",
+        "type": "GEN"
+      },
+      {
+        "name": "Bithari Chainpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Faridpur",
+        "type": "SC"
+      },
+      {
+        "name": "Meerganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Nawabganj",
+        "type": "GEN"
+      }
+    ],
+    "Kanpur Nagar": [
+      {
+        "name": "Arya Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Bilhaur",
+        "type": "SC"
+      },
+      {
+        "name": "Bithoor",
+        "type": "GEN"
+      },
+      {
+        "name": "Ghatampur",
+        "type": "SC"
+      },
+      {
+        "name": "Govindnagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Kalyanpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Kanpur Cantt.",
+        "type": "GEN"
+      },
+      {
+        "name": "Kidwai Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Maharajpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Sishamau",
+        "type": "GEN"
+      }
+    ],
+    "Sambhal": [
+      {
+        "name": "Asmoli",
+        "type": "GEN"
+      },
+      {
+        "name": "Chandausi",
+        "type": "SC"
+      },
+      {
+        "name": "Gunnaur",
+        "type": "GEN"
+      },
+      {
+        "name": "Sambhal",
+        "type": "GEN"
+      }
+    ],
+    "Azamgarh": [
+      {
+        "name": "Atrauliya",
+        "type": "GEN"
+      },
+      {
+        "name": "Azamgarh",
+        "type": "GEN"
+      },
+      {
+        "name": "Didarganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Gopalpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Lalganj",
+        "type": "SC"
+      },
+      {
+        "name": "Mehnagar",
+        "type": "SC"
+      },
+      {
+        "name": "Mubarakpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Nizamabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Phoolpur Pawai",
+        "type": "GEN"
+      },
+      {
+        "name": "Sagri",
+        "type": "GEN"
+      }
+    ],
+    "Bhadohi": [
+      {
+        "name": "Aurai",
+        "type": "SC"
+      },
+      {
+        "name": "Bhadohi",
+        "type": "GEN"
+      },
+      {
+        "name": "Gyanpur",
+        "type": "GEN"
+      }
+    ],
+    "Auraiya": [
+      {
+        "name": "Auraiya",
+        "type": "SC"
+      },
+      {
+        "name": "Bidhuna",
+        "type": "GEN"
+      },
+      {
+        "name": "Dibiyapur",
+        "type": "GEN"
+      }
+    ],
+    "Fatehpur": [
+      {
+        "name": "Ayah Shah",
+        "type": "GEN"
+      },
+      {
+        "name": "Bindki",
+        "type": "GEN"
+      },
+      {
+        "name": "Fatehpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Husainganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Jahanabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Khaga",
+        "type": "SC"
+      }
+    ],
+    "Ayodhya": [
+      {
+        "name": "Ayodhya",
+        "type": "GEN"
+      },
+      {
+        "name": "Bikapur",
+        "type": "GEN"
+      },
+      {
+        "name": "Goshainganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Milkipur",
+        "type": "SC"
+      },
+      {
+        "name": "Rudauli",
+        "type": "GEN"
+      }
+    ],
+    "Pratapgarh": [
+      {
+        "name": "Babaganj",
+        "type": "SC"
+      },
+      {
+        "name": "Kunda",
+        "type": "GEN"
+      },
+      {
+        "name": "Patti",
+        "type": "GEN"
+      },
+      {
+        "name": "Pratapgarh",
+        "type": "GEN"
+      },
+      {
+        "name": "Rampur Khas",
+        "type": "GEN"
+      },
+      {
+        "name": "Raniganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Vishwanath Ganj",
+        "type": "GEN"
+      }
+    ],
+    "Banda": [
+      {
+        "name": "Baberu",
+        "type": "GEN"
+      },
+      {
+        "name": "Banda",
+        "type": "GEN"
+      },
+      {
+        "name": "Naraini",
+        "type": "SC"
+      },
+      {
+        "name": "Tindwari",
+        "type": "GEN"
+      }
+    ],
+    "Jhansi": [
+      {
+        "name": "Babina",
+        "type": "GEN"
+      },
+      {
+        "name": "Garautha",
+        "type": "GEN"
+      },
+      {
+        "name": "Jhansi Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Mauranipur",
+        "type": "SC"
+      }
+    ],
+    "Raebareli": [
+      {
+        "name": "Bachhrawan",
+        "type": "SC"
+      },
+      {
+        "name": "Harchandpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Rae Bareli",
+        "type": "GEN"
+      },
+      {
+        "name": "Salon",
+        "type": "SC"
+      },
+      {
+        "name": "Sareni",
+        "type": "GEN"
+      },
+      {
+        "name": "Unchahar",
+        "type": "GEN"
+      }
+    ],
+    "Budaun": [
+      {
+        "name": "Badaun",
+        "type": "GEN"
+      },
+      {
+        "name": "Bilsi",
+        "type": "GEN"
+      },
+      {
+        "name": "Bisauli",
+        "type": "SC"
+      },
+      {
+        "name": "Dataganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Sahaswan",
+        "type": "GEN"
+      },
+      {
+        "name": "Shekhupur",
+        "type": "GEN"
+      }
+    ],
+    "Jaunpur": [
+      {
+        "name": "Badlapur",
+        "type": "GEN"
+      },
+      {
+        "name": "Jaunpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Kerakat",
+        "type": "SC"
+      },
+      {
+        "name": "Machhlishahr",
+        "type": "SC"
+      },
+      {
+        "name": "Malhani",
+        "type": "GEN"
+      },
+      {
+        "name": "Mariyahu",
+        "type": "GEN"
+      },
+      {
+        "name": "Mungra Badshahpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Shahganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Zafrabad",
+        "type": "GEN"
+      }
+    ],
+    "Baghpat": [
+      {
+        "name": "Baghpat",
+        "type": "GEN"
+      },
+      {
+        "name": "Baraut",
+        "type": "GEN"
+      },
+      {
+        "name": "Chhaprauli",
+        "type": "GEN"
+      }
+    ],
+    "Bahraich": [
+      {
+        "name": "Bahraich",
+        "type": "GEN"
+      },
+      {
+        "name": "Balha",
+        "type": "SC"
+      },
+      {
+        "name": "Kaiserganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Mahasi",
+        "type": "GEN"
+      },
+      {
+        "name": "Matera",
+        "type": "GEN"
+      },
+      {
+        "name": "Nanpara",
+        "type": "GEN"
+      },
+      {
+        "name": "Payagpur",
+        "type": "GEN"
+      }
+    ],
+    "Ballia": [
+      {
+        "name": "Bairia",
+        "type": "GEN"
+      },
+      {
+        "name": "Ballia Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Bansdih",
+        "type": "GEN"
+      },
+      {
+        "name": "Belthara Road",
+        "type": "SC"
+      },
+      {
+        "name": "Phephana",
+        "type": "GEN"
+      },
+      {
+        "name": "Rasara",
+        "type": "GEN"
+      },
+      {
+        "name": "Sikanderpur",
+        "type": "GEN"
+      }
+    ],
+    "Lucknow": [
+      {
+        "name": "Bakshi Kaa Talab",
+        "type": "GEN"
+      },
+      {
+        "name": "Lucknow Cantt.",
+        "type": "GEN"
+      },
+      {
+        "name": "Lucknow Central",
+        "type": "GEN"
+      },
+      {
+        "name": "Lucknow East",
+        "type": "GEN"
+      },
+      {
+        "name": "Lucknow North",
+        "type": "GEN"
+      },
+      {
+        "name": "Lucknow West",
+        "type": "GEN"
+      },
+      {
+        "name": "Malihabad",
+        "type": "SC"
+      },
+      {
+        "name": "Mohanlalganj",
+        "type": "SC"
+      },
+      {
+        "name": "Sarojini Nagar",
+        "type": "GEN"
+      }
+    ],
+    "Hardoi": [
+      {
+        "name": "Balamau",
+        "type": "SC"
+      },
+      {
+        "name": "Bilgram-Mallanwan",
+        "type": "GEN"
+      },
+      {
+        "name": "Gopamau",
+        "type": "SC"
+      },
+      {
+        "name": "Hardoi",
+        "type": "GEN"
+      },
+      {
+        "name": "Sandi",
+        "type": "SC"
+      },
+      {
+        "name": "Sandila",
+        "type": "GEN"
+      },
+      {
+        "name": "Sawaijpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Shahabad",
+        "type": "GEN"
+      }
+    ],
+    "Mathura": [
+      {
+        "name": "Baldev",
+        "type": "SC"
+      },
+      {
+        "name": "Chhata",
+        "type": "GEN"
+      },
+      {
+        "name": "Goverdhan",
+        "type": "GEN"
+      },
+      {
+        "name": "Mant",
+        "type": "GEN"
+      },
+      {
+        "name": "Mathura",
+        "type": "GEN"
+      }
+    ],
+    "Balrampur": [
+      {
+        "name": "Balrampur",
+        "type": "SC"
+      },
+      {
+        "name": "Gainsari",
+        "type": "GEN"
+      },
+      {
+        "name": "Tulsipur",
+        "type": "GEN"
+      },
+      {
+        "name": "Utraula",
+        "type": "GEN"
+      }
+    ],
+    "Unnao": [
+      {
+        "name": "Bangermau",
+        "type": "GEN"
+      },
+      {
+        "name": "Bhagwantnagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Mohan",
+        "type": "SC"
+      },
+      {
+        "name": "Purwa",
+        "type": "GEN"
+      },
+      {
+        "name": "Safipur",
+        "type": "SC"
+      },
+      {
+        "name": "Unnao",
+        "type": "GEN"
+      }
+    ],
+    "Gorakhpur": [
+      {
+        "name": "Bansgaon",
+        "type": "SC"
+      },
+      {
+        "name": "Caimpiyarganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Chauri-Chaura",
+        "type": "GEN"
+      },
+      {
+        "name": "Chillupar",
+        "type": "GEN"
+      },
+      {
+        "name": "Gorakhpur Rural",
+        "type": "GEN"
+      },
+      {
+        "name": "Gorakhpur Urban",
+        "type": "GEN"
+      },
+      {
+        "name": "Khajani",
+        "type": "SC"
+      },
+      {
+        "name": "Pipraich",
+        "type": "GEN"
+      },
+      {
+        "name": "Sahajanwa",
+        "type": "GEN"
+      }
+    ],
+    "Siddharthnagar": [
+      {
+        "name": "Bansi",
+        "type": "GEN"
+      },
+      {
+        "name": "Doomariyaganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Itwa",
+        "type": "GEN"
+      },
+      {
+        "name": "Kapilvastu",
+        "type": "SC"
+      },
+      {
+        "name": "Shohratgarh",
+        "type": "GEN"
+      }
+    ],
+    "Barabanki": [
+      {
+        "name": "Barabanki",
+        "type": "GEN"
+      },
+      {
+        "name": "Dariyabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Haidergarh",
+        "type": "SC"
+      },
+      {
+        "name": "Kursi",
+        "type": "GEN"
+      },
+      {
+        "name": "Ram Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Zaidpur",
+        "type": "SC"
+      }
+    ],
+    "Deoria": [
+      {
+        "name": "Barhaj",
+        "type": "GEN"
+      },
+      {
+        "name": "Bhatpar Rani",
+        "type": "GEN"
+      },
+      {
+        "name": "Deoria",
+        "type": "GEN"
+      },
+      {
+        "name": "Pathardeva",
+        "type": "GEN"
+      },
+      {
+        "name": "Rampur Karkhana",
+        "type": "GEN"
+      },
+      {
+        "name": "Rudrapur",
+        "type": "GEN"
+      },
+      {
+        "name": "Salempur",
+        "type": "SC"
+      }
+    ],
+    "Bijnor": [
+      {
+        "name": "Barhapur",
+        "type": "GEN"
+      },
+      {
+        "name": "Bijnor",
+        "type": "GEN"
+      },
+      {
+        "name": "Chandpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Dhampur",
+        "type": "GEN"
+      },
+      {
+        "name": "Nagina",
+        "type": "SC"
+      },
+      {
+        "name": "Najibabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Nehtaur",
+        "type": "SC"
+      },
+      {
+        "name": "Noorpur",
+        "type": "GEN"
+      }
+    ],
+    "Pilibhit": [
+      {
+        "name": "Barkhera",
+        "type": "GEN"
+      },
+      {
+        "name": "Bisalpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Pilibhit",
+        "type": "GEN"
+      },
+      {
+        "name": "Puranpur",
+        "type": "SC"
+      }
+    ],
+    "Basti": [
+      {
+        "name": "Basti Sadar",
+        "type": "GEN"
+      },
+      {
+        "name": "Harraiya",
+        "type": "GEN"
+      },
+      {
+        "name": "Kaptanganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Mahadewa",
+        "type": "SC"
+      },
+      {
+        "name": "Rudhauli",
+        "type": "GEN"
+      }
+    ],
+    "Saharanpur": [
+      {
+        "name": "Behat",
+        "type": "GEN"
+      },
+      {
+        "name": "Deoband",
+        "type": "GEN"
+      },
+      {
+        "name": "Gangoh",
+        "type": "GEN"
+      },
+      {
+        "name": "Nakur",
+        "type": "GEN"
+      },
+      {
+        "name": "Rampur Maniharan",
+        "type": "SC"
+      },
+      {
+        "name": "Saharanpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Saharanpur Nagar",
+        "type": "GEN"
+      }
+    ],
+    "Etawah": [
+      {
+        "name": "Bharthana",
+        "type": "SC"
+      },
+      {
+        "name": "Etawah",
+        "type": "GEN"
+      },
+      {
+        "name": "Jaswantnagar",
+        "type": "GEN"
+      }
+    ],
+    "Shrawasti": [
+      {
+        "name": "Bhinga",
+        "type": "GEN"
+      },
+      {
+        "name": "Shrawasti",
+        "type": "GEN"
+      }
+    ],
+    "Mainpuri": [
+      {
+        "name": "Bhongaon",
+        "type": "GEN"
+      },
+      {
+        "name": "Karhal",
+        "type": "GEN"
+      },
+      {
+        "name": "Kishani",
+        "type": "SC"
+      },
+      {
+        "name": "Mainpuri",
+        "type": "GEN"
+      }
+    ],
+    "Moradabad": [
+      {
+        "name": "Bilari",
+        "type": "GEN"
+      },
+      {
+        "name": "Kanth",
+        "type": "GEN"
+      },
+      {
+        "name": "Kundarki",
+        "type": "GEN"
+      },
+      {
+        "name": "Moradabad Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Moradabad Rural",
+        "type": "GEN"
+      },
+      {
+        "name": "Thakurdwara",
+        "type": "GEN"
+      }
+    ],
+    "Rampur": [
+      {
+        "name": "Bilaspur",
+        "type": "GEN"
+      },
+      {
+        "name": "Chamraua",
+        "type": "GEN"
+      },
+      {
+        "name": "Milak",
+        "type": "SC"
+      },
+      {
+        "name": "Rampur",
+        "type": "GEN"
+      },
+      {
+        "name": "Suar",
+        "type": "GEN"
+      }
+    ],
+    "Sitapur": [
+      {
+        "name": "Biswan",
+        "type": "GEN"
+      },
+      {
+        "name": "Hargaon",
+        "type": "SC"
+      },
+      {
+        "name": "Laharpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Mahmoodabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Maholi",
+        "type": "GEN"
+      },
+      {
+        "name": "Misrikh",
+        "type": "SC"
+      },
+      {
+        "name": "Sevata",
+        "type": "GEN"
+      },
+      {
+        "name": "Sidhauli",
+        "type": "SC"
+      },
+      {
+        "name": "Sitapur",
+        "type": "GEN"
+      }
+    ],
+    "Muzaffarnagar": [
+      {
+        "name": "Budhana",
+        "type": "GEN"
+      },
+      {
+        "name": "Charthawal",
+        "type": "GEN"
+      },
+      {
+        "name": "Khatauli",
+        "type": "GEN"
+      },
+      {
+        "name": "Meerapur",
+        "type": "GEN"
+      },
+      {
+        "name": "Muzaffar Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Purqazi",
+        "type": "SC"
+      }
+    ],
+    "Kaushambi": [
+      {
+        "name": "Chail",
+        "type": "GEN"
+      },
+      {
+        "name": "Manjhanpur",
+        "type": "SC"
+      },
+      {
+        "name": "Sirathu",
+        "type": "GEN"
+      }
+    ],
+    "Chandauli": [
+      {
+        "name": "Chakia",
+        "type": "SC"
+      },
+      {
+        "name": "Mughalsarai",
+        "type": "GEN"
+      },
+      {
+        "name": "Saiyadraja",
+        "type": "GEN"
+      },
+      {
+        "name": "Sakaldiha",
+        "type": "GEN"
+      }
+    ],
+    "Mahoba": [
+      {
+        "name": "Charkhari",
+        "type": "GEN"
+      },
+      {
+        "name": "Mahoba",
+        "type": "GEN"
+      }
+    ],
+    "Mirzapur": [
+      {
+        "name": "Chhanbey",
+        "type": "SC"
+      },
+      {
+        "name": "Chunar",
+        "type": "GEN"
+      },
+      {
+        "name": "Majhawan",
+        "type": "GEN"
+      },
+      {
+        "name": "Marihan",
+        "type": "GEN"
+      },
+      {
+        "name": "Mirzapur",
+        "type": "GEN"
+      }
+    ],
+    "Kannauj": [
+      {
+        "name": "Chhibramau",
+        "type": "GEN"
+      },
+      {
+        "name": "Kannauj",
+        "type": "SC"
+      },
+      {
+        "name": "Tirwa",
+        "type": "GEN"
+      }
+    ],
+    "Chitrakoot": [
+      {
+        "name": "Chitrakoot",
+        "type": "GEN"
+      },
+      {
+        "name": "Manikpur",
+        "type": "GEN"
+      }
+    ],
+    "Gonda": [
+      {
+        "name": "Colonelganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Gaura",
+        "type": "GEN"
+      },
+      {
+        "name": "Gonda",
+        "type": "GEN"
+      },
+      {
+        "name": "Katra Bazar",
+        "type": "GEN"
+      },
+      {
+        "name": "Mankapur",
+        "type": "SC"
+      },
+      {
+        "name": "Mehnaun",
+        "type": "GEN"
+      },
+      {
+        "name": "Tarabganj",
+        "type": "GEN"
+      }
+    ],
+    "Shahjahanpur": [
+      {
+        "name": "Dadraul",
+        "type": "GEN"
+      },
+      {
+        "name": "Jalalabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Katra",
+        "type": "GEN"
+      },
+      {
+        "name": "Powayan",
+        "type": "SC"
+      },
+      {
+        "name": "Shahjahanpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Tilhar",
+        "type": "GEN"
+      }
+    ],
+    "Gautam Buddha Nagar": [
+      {
+        "name": "Dadri",
+        "type": "GEN"
+      },
+      {
+        "name": "Jewar",
+        "type": "GEN"
+      },
+      {
+        "name": "Noida",
+        "type": "GEN"
+      }
+    ],
+    "Sant Kabir Nagar": [
+      {
+        "name": "Dhanghata",
+        "type": "SC"
+      },
+      {
+        "name": "Khalilabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Menhdawal",
+        "type": "GEN"
+      }
+    ],
+    "Kheri": [
+      {
+        "name": "Dhaurahra",
+        "type": "GEN"
+      },
+      {
+        "name": "Gola Gokrannath",
+        "type": "GEN"
+      },
+      {
+        "name": "Kasta",
+        "type": "SC"
+      },
+      {
+        "name": "Lakhimpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Mohammdi",
+        "type": "GEN"
+      },
+      {
+        "name": "Nighasan",
+        "type": "GEN"
+      },
+      {
+        "name": "Palia",
+        "type": "GEN"
+      },
+      {
+        "name": "Sri Nagar (SC)",
+        "type": "SC"
+      }
+    ],
+    "Hapur": [
+      {
+        "name": "Dholana",
+        "type": "GEN"
+      },
+      {
+        "name": "Garhmukteshwar",
+        "type": "GEN"
+      },
+      {
+        "name": "Hapur",
+        "type": "SC"
+      }
+    ],
+    "Sonbhadra": [
+      {
+        "name": "Duddhi",
+        "type": "ST"
+      },
+      {
+        "name": "Ghorawal",
+        "type": "GEN"
+      },
+      {
+        "name": "Obra",
+        "type": "ST"
+      },
+      {
+        "name": "Robertsganj",
+        "type": "GEN"
+      }
+    ],
+    "Kushinagar": [
+      {
+        "name": "Fazilnagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Hata",
+        "type": "GEN"
+      },
+      {
+        "name": "Khadda",
+        "type": "GEN"
+      },
+      {
+        "name": "Kushinagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Padrauna",
+        "type": "GEN"
+      },
+      {
+        "name": "Ramkola",
+        "type": "SC"
+      },
+      {
+        "name": "Tamkuhi Raj",
+        "type": "GEN"
+      }
+    ],
+    "Firozabad": [
+      {
+        "name": "Firozabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Jasrana",
+        "type": "GEN"
+      },
+      {
+        "name": "Shikohabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Sirsaganj",
+        "type": "GEN"
+      },
+      {
+        "name": "Tundla",
+        "type": "SC"
+      }
+    ],
+    "Ghaziabad": [
+      {
+        "name": "Ghaziabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Loni",
+        "type": "GEN"
+      },
+      {
+        "name": "Modi Nagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Muradnagar",
+        "type": "GEN"
+      },
+      {
+        "name": "Sahibabad",
+        "type": "GEN"
+      }
+    ],
+    "Ghazipur": [
+      {
+        "name": "Ghazipur",
+        "type": "GEN"
+      },
+      {
+        "name": "Jakhanian",
+        "type": "SC"
+      },
+      {
+        "name": "Jangipur",
+        "type": "GEN"
+      },
+      {
+        "name": "Mohammadabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Saidpur",
+        "type": "SC"
+      },
+      {
+        "name": "Zahoorabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Zamania",
+        "type": "GEN"
+      }
+    ],
+    "Mau": [
+      {
+        "name": "Ghosi",
+        "type": "GEN"
+      },
+      {
+        "name": "Madhuban",
+        "type": "GEN"
+      },
+      {
+        "name": "Mau",
+        "type": "GEN"
+      },
+      {
+        "name": "Muhammadabad- Gohna (SC)",
+        "type": "SC"
+      }
+    ],
+    "Hamirpur": [
+      {
+        "name": "Hamirpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Rath",
+        "type": "SC"
+      }
+    ],
+    "Meerut": [
+      {
+        "name": "Hastinapur",
+        "type": "SC"
+      },
+      {
+        "name": "Kithore",
+        "type": "GEN"
+      },
+      {
+        "name": "Meerut",
+        "type": "GEN"
+      },
+      {
+        "name": "Meerut Cantt.",
+        "type": "GEN"
+      },
+      {
+        "name": "Meerut South",
+        "type": "GEN"
+      },
+      {
+        "name": "Sardhana",
+        "type": "GEN"
+      },
+      {
+        "name": "Siwalkhas",
+        "type": "GEN"
+      }
+    ],
+    "Hathras": [
+      {
+        "name": "Hathras",
+        "type": "SC"
+      },
+      {
+        "name": "Sadabad",
+        "type": "GEN"
+      },
+      {
+        "name": "Sikandra Rao",
+        "type": "GEN"
+      }
+    ],
+    "Sultanpur": [
+      {
+        "name": "Isauli",
+        "type": "GEN"
+      },
+      {
+        "name": "Kadipur",
+        "type": "SC"
+      },
+      {
+        "name": "Lambhua",
+        "type": "GEN"
+      },
+      {
+        "name": "Sadar",
+        "type": "GEN"
+      },
+      {
+        "name": "Sultanpur",
+        "type": "GEN"
+      }
+    ],
+    "Shamli": [
+      {
+        "name": "Kairana",
+        "type": "GEN"
+      },
+      {
+        "name": "Shamli",
+        "type": "GEN"
+      },
+      {
+        "name": "Thana Bhawan",
+        "type": "GEN"
+      }
+    ],
+    "Jalaun": [
+      {
+        "name": "Kalpi",
+        "type": "GEN"
+      },
+      {
+        "name": "Madhaugarh",
+        "type": "GEN"
+      },
+      {
+        "name": "Orai",
+        "type": "SC"
+      }
+    ],
+    "Lalitpur": [
+      {
+        "name": "Lalitpur",
+        "type": "GEN"
+      },
+      {
+        "name": "Mehroni",
+        "type": "SC"
+      }
+    ],
+    "Maharajganj": [
+      {
+        "name": "Maharajganj",
+        "type": "SC"
+      },
+      {
+        "name": "Nautanwa",
+        "type": "GEN"
+      },
+      {
+        "name": "PANIYRA",
+        "type": "GEN"
+      },
+      {
+        "name": "Pharenda",
+        "type": "GEN"
+      },
+      {
+        "name": "Siswa",
+        "type": "GEN"
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS PRO System - Admin Dashboard</title>
+    <style>
+        /* Global Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body { 
+            background-color: #0f172a; /* Deep Dark Background */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(30, 41, 59, 0.7); /* Glassmorphism Card */
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 { margin-bottom: 20px; color: #60a5fa; letter-spacing: 1px; }
+
+        /* Dropdown Styling - Ab ye 100% Dark dikhega */
+        .dropdown-container {
+            position: relative;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #94a3b8; }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #1e293b !important; /* Force Dark Color */
+            color: white !important;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            appearance: none; /* Default arrow hide */
+            -webkit-appearance: none;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        select:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3); }
+
+        /* Custom Arrow Icon */
+        .dropdown-container::after {
+            content: '▼';
+            font-size: 12px;
+            color: #60a5fa;
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            pointer-events: none;
+        }
+
+        option { background-color: #1e293b; color: white; padding: 10px; }
+
+        .btn {
+            margin-top: 30px;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>EMS PRO System</h2>
+        <p style="color: #94a3b8; font-size: 14px;">Select your management level</p>
+
+        <div class="dropdown-container">
+            <label>Access Role</label>
+            <select id="roleSelect">
+                <option value="district">District Admin</option>
+                <option value="zone">Zone Admin</option>
+                <option value="booth">Booth Manager</option>
+            </select>
+        </div>
+
+        <button class="btn">Login to Dashboard</button>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+﻿/* Forcefully hiding the white background of select and options */
+select, option {
+    background-color: #0a0a0a !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+}
+
+/* Darkening the whole dashboard card */
+div[class*="bg-white"], .bg-white {
+    background-color: #0a0a0a !important;
+}
+
+/* Darkening the Next/Back buttons to remove light feel */
+button {
+    background-color: #111 !important;
+    color: #888 !important;
+    border: 1px solid #222 !important;
+}

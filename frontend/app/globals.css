@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* 🛡️ ADMIN RAM LAKHAN MASTER VARIABLES */
+:root {
+  --background: #010804;
+  --foreground: #ffffff;
+  --ems-red: #DA251D;
+  --ems-green: #00914C;
+  --ems-orange: #FFA500;
+  --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+}
+
+body {
+  background-color: var(--background) !important;
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 💎 Elite Glass Container - IPAC Takkar Look */
+.elite-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(45px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(45px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 
+    0 50px 100px -20px rgba(0, 0, 0, 0.8), 
+    inset 0 0 20px rgba(255, 255, 255, 0.02) !important;
+  border-radius: 40px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🔥 Neon Red Glow for Buttons */
+.neon-glow-red {
+  border: 1px solid rgba(218, 37, 29, 0.4) !important;
+  background: rgba(218, 37, 29, 0.08) !important;
+  display: inline-block;
+  padding: 12px 32px;
+  border-radius: 9999px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.neon-glow-red:hover {
+  box-shadow: 0 0 40px rgba(218, 37, 29, 0.4);
+  background: rgba(218, 37, 29, 0.15) !important;
+  border-color: var(--ems-red) !important;
+  transform: translateY(-2px);
+}
+
+/* 📱 Mobile Specific */
+@media (max-width: 640px) {
+  .elite-card {
+    border-radius: 35px;
+    padding: 25px 20px !important;
+  }
+}
+
+/* 🛰️ Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--background); }
+::-webkit-scrollbar-thumb { background: var(--ems-red); border-radius: 10px; }
