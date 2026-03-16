@@ -1,10 +1,13 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ShieldCheck, Globe, Clock, UserCheck, Activity, AlertTriangle, ShieldAlert } from "lucide-react";
 
 export default function SuperAdminPortal() {
-  const [activeFilter, setActiveFilter] = useState('Verified');
+  const [activeFilter,     setActiveFilter]     = useState('Pending');
   const [selectedDistrict, setSelectedDistrict] = useState('All Districts');
+  const [onlineStats,      setOnlineStats]      = useState({ total: 0, loading: true });
+  const [candidates,       setCandidates]       = useState([]);
+  const [candLoading,      setCandLoading]       = useState(true);
   
   // Permission Requests State
   const [permRequests, setPermRequests] = useState([
@@ -12,15 +15,53 @@ export default function SuperAdminPortal() {
     { id: 2, node: "Mainpuri Zone", requester: "Zone Head", zone: "Braj Zone", time: "15 mins ago" }
   ]);
 
-  // Approval Data
-  const [candidates, setCandidates] = useState([
-    { id: "EMS-UP-101", name: "Ramesh Yadav", role: "Jan Sampark Sathi", district: "Mainpuri", stateStatus: "Verified" },
-    { id: "EMS-UP-999", name: "Special Unit X", role: "Booth Manager", district: "Lucknow", stateStatus: "Rejected" },
-  ]);
+  // 📡 Live online count from Redis heartbeat
+  const fetchOnline = useCallback(() => {
+    fetch('/api/workers/online-status')
+      .then(r => r.json())
+      .then(d => { if (d.success) setOnlineStats({ total: d.total, loading: false }); })
+      .catch(() => setOnlineStats(p => ({ ...p, loading: false })));
+  }, []);
 
-  const handlePermAction = (id, action) => {
-    setPermRequests(permRequests.filter(req => req.id !== id));
-    console.log(`Access ${action} for Node #${id}`);
+  // Fetch real pending/verified workers from DB
+  const fetchCandidates = useCallback((status) => {
+    setCandLoading(true);
+    fetch(`/api/workers/list?stateStatus=${status}&limit=30`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          setCandidates(d.data.map(w => ({
+            id:          w._id,
+            emsId:       w.emsId || 'Pending',
+            name:        w.fullName || w.name,
+            role:        w.role,
+            district:    w.district,
+            stateStatus: w.stateStatus,
+          })));
+        }
+      })
+      .catch(() => {})
+      .finally(() => setCandLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchOnline();
+    const id = setInterval(fetchOnline, 30_000);
+    return () => clearInterval(id);
+  }, [fetchOnline]);
+
+  useEffect(() => { fetchCandidates(activeFilter); }, [activeFilter, fetchCandidates]);
+
+  const handleApprove = async (candidateId, action) => {
+    try {
+      const res = await fetch(`/api/workers/${candidateId}/approve`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      const data = await res.json();
+      if (data.success) fetchCandidates(activeFilter);
+    } catch (_) {}
   };
 
   return (
@@ -46,10 +87,10 @@ export default function SuperAdminPortal() {
         {/* --- 🌍 GLOBAL ANALYTICS --- */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           {[
-            { label: "Total Voters (UP)", val: "15.2 Cr", color: "text-white" },
-            { label: "Active Nodes", val: "3,80,450", color: "text-red-600" },
-            { label: "Verified Queue", val: "1,240", color: "text-green-500" },
-            { label: "Access Requests", val: permRequests.length, color: "text-yellow-500" }
+            { label: "Total Voters (UP)", val: "15.2 Cr",                                             color: "text-white" },
+            { label: "Online Now",        val: onlineStats.loading ? '...' : onlineStats.total.toLocaleString(), color: "text-red-600" },
+            { label: "Worker Queue",      val: candLoading ? '...' : candidates.length,                color: "text-green-500" },
+            { label: "Access Requests",   val: permRequests.length,                                   color: "text-yellow-500" }
           ].map((stat, i) => (
             <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-[3rem] backdrop-blur-3xl">
               <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-2 italic">{stat.label}</p>
@@ -76,8 +117,8 @@ export default function SuperAdminPortal() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => handlePermAction(req.id, 'denied')} className="px-4 py-2 bg-white/5 rounded-xl text-[9px] font-black uppercase italic hover:bg-red-600 transition-all">Deny</button>
-                    <button onClick={() => handlePermAction(req.id, 'granted')} className="px-6 py-2 bg-yellow-600 text-black rounded-xl text-[9px] font-black uppercase italic hover:scale-105 transition-all shadow-lg shadow-yellow-600/20">Grant Access</button>
+                    <button onClick={() => setPermRequests(permRequests.filter(r => r.id !== req.id))} className="px-4 py-2 bg-white/5 rounded-xl text-[9px] font-black uppercase italic hover:bg-red-600 transition-all">Deny</button>
+                    <button onClick={() => setPermRequests(permRequests.filter(r => r.id !== req.id))} className="px-6 py-2 bg-yellow-600 text-black rounded-xl text-[9px] font-black uppercase italic hover:scale-105 transition-all shadow-lg shadow-yellow-600/20">Grant Access</button>
                   </div>
                 </div>
               ))}
@@ -88,11 +129,14 @@ export default function SuperAdminPortal() {
         {/* --- MASTER CONTROLS --- */}
         <div className="flex flex-col lg:flex-row gap-6 mb-10 justify-between items-center">
           <div className="flex gap-4">
-            <button onClick={() => setActiveFilter('Verified')} className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase italic tracking-widest transition-all ${activeFilter === 'Verified' ? 'bg-white text-black shadow-2xl scale-105' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
-              Verified Queue
+            <button onClick={() => setActiveFilter('Pending')} className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase italic tracking-widest transition-all ${activeFilter === 'Pending' ? 'bg-white text-black shadow-2xl scale-105' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
+              Pending Queue
+            </button>
+            <button onClick={() => setActiveFilter('Verified')} className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase italic tracking-widest transition-all ${activeFilter === 'Verified' ? 'bg-green-600 text-white shadow-2xl shadow-green-600/20 scale-105' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
+              Verified Nodes
             </button>
             <button onClick={() => setActiveFilter('Rejected')} className={`px-10 py-4 rounded-2xl text-[10px] font-black uppercase italic tracking-widest transition-all ${activeFilter === 'Rejected' ? 'bg-red-600 text-white shadow-2xl shadow-red-600/20 scale-105' : 'bg-white/5 text-gray-500 border border-white/10'}`}>
-              Bypass Rejections
+              Rejected
             </button>
           </div>
           
@@ -121,24 +165,43 @@ export default function SuperAdminPortal() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {candidates.filter(c => activeFilter === 'Verified' ? c.stateStatus === 'Verified' : c.stateStatus === 'Rejected').map((c) => (
+                {candLoading ? (
+                  <tr><td colSpan={4} className="p-10 text-center text-gray-600 font-bold uppercase text-xs animate-pulse">Loading workers from database...</td></tr>
+                ) : candidates.length === 0 ? (
+                  <tr><td colSpan={4} className="p-10 text-center text-gray-600 font-bold uppercase text-xs">No workers in this queue</td></tr>
+                ) : candidates.map((c) => (
                   <tr key={c.id} className="hover:bg-white/[0.02] transition-all group">
                     <td className="p-8">
                       <p className="font-black uppercase text-xl italic group-hover:text-red-600 transition-colors leading-none">{c.name}</p>
-                      <p className="text-[10px] text-gray-600 font-mono tracking-widest mt-2 italic">{c.id} | {c.role}</p>
+                      <p className="text-[10px] text-gray-600 font-mono tracking-widest mt-2 italic">{c.emsId} | {c.role}</p>
                     </td>
                     <td className="p-8 uppercase font-black text-xs text-gray-400 italic">
                       {c.district} ➔ STATE ➔ ADMIN
                     </td>
                     <td className="p-8">
-                      <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase italic tracking-widest ${c.stateStatus === 'Verified' ? 'bg-green-600/20 text-green-500 border border-green-600/30' : 'bg-red-600/20 text-red-600 border border-red-600/30'}`}>
+                      <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase italic tracking-widest ${
+                        c.stateStatus === 'Verified' ? 'bg-green-600/20 text-green-500 border border-green-600/30' :
+                        c.stateStatus === 'Rejected' ? 'bg-red-600/20 text-red-600 border border-red-600/30' :
+                        'bg-yellow-600/20 text-yellow-500 border border-yellow-600/30'
+                      }`}>
                         {c.stateStatus}
                       </span>
                     </td>
                     <td className="p-8 text-right">
-                      <button className="bg-white text-black hover:bg-red-600 hover:text-white px-10 py-4 rounded-2xl text-xs font-black uppercase italic tracking-widest transition-all shadow-xl hover:scale-105 active:scale-95">
-                        {c.stateStatus === 'Rejected' ? 'Bypass & Approve' : 'Activate Node'}
-                      </button>
+                      <div className="flex gap-2 justify-end">
+                        {c.stateStatus !== 'Verified' && (
+                          <button onClick={() => handleApprove(c.id, 'approve')}
+                            className="bg-green-600 text-white hover:bg-green-700 px-6 py-3 rounded-2xl text-xs font-black uppercase italic tracking-widest transition-all hover:scale-105 active:scale-95">
+                            Approve
+                          </button>
+                        )}
+                        {c.stateStatus !== 'Rejected' && (
+                          <button onClick={() => handleApprove(c.id, 'reject')}
+                            className="bg-white/5 border border-white/10 text-gray-400 hover:bg-red-600 hover:text-white px-6 py-3 rounded-2xl text-xs font-black uppercase italic tracking-widest transition-all">
+                            Reject
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

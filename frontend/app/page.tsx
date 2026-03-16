@@ -1,10 +1,17 @@
+// @ts-nocheck
 "use client";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { UserPlus, ShieldCheck, Sword } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export default function Welcome() {
   const router = useRouter();
+  const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const tx = (key: string, fallback: string) => mounted ? t(key) : fallback;
 
   const containerStyle = {
     backgroundColor: "#010804",
@@ -48,7 +55,7 @@ export default function Welcome() {
           color: "#00914C", fontSize: "12px", fontWeight: "800", letterSpacing: "4px", 
           marginBottom: "15px", opacity: 0.9, textTransform: "uppercase" 
         }}>
-          UP ELECTION INFRASTRUCTURE 2026
+          {tx('landing_tagline', 'UP ELECTION INFRASTRUCTURE 2026')}
         </div>
 
         {/* Logo EMS.UP */}
@@ -69,8 +76,8 @@ export default function Welcome() {
           fontSize: "clamp(15px, 4.5vw, 18px)", color: "#aaa", marginTop: "20px", 
           maxWidth: "480px", width: "90%", fontWeight: "400", lineHeight: "1.8" 
         }}>
-          Advanced Digital Governance for a New Era.<br />
-          Secure. Transparent. Scalable.
+          {tx('landing_desc_1', 'Advanced Digital Governance for a New Era.')}<br />
+          {tx('landing_desc_2', 'Secure. Transparent. Scalable.')}
         </p>
 
         {/* Action Buttons Section */}
@@ -87,7 +94,7 @@ export default function Welcome() {
               alignItems: "center", justifyContent: "center", gap: "10px", boxShadow: "0 15px 30px rgba(0,0,0,0.4)" 
             }}
           >
-            OFFICER LOGIN <ShieldCheck size={18} />
+             {tx('officer_login', 'OFFICER LOGIN')} <ShieldCheck size={18} />
           </motion.button>
 
           {/* Warriors Node Link */}
@@ -102,7 +109,7 @@ export default function Welcome() {
               justifyContent: "center", gap: "10px" 
             }}
           >
-            WARRIORS NODE <Sword size={18} />
+             {tx('warriors_node', 'WARRIORS NODE')} <Sword size={18} />
           </motion.button>
 
           {/* ✅ New Enrollment Button (Wapas Add Kiya) */}
@@ -117,16 +124,16 @@ export default function Welcome() {
               justifyContent: "center", gap: "8px", marginTop: "10px"
             }}
           >
-            NEW ENROLLMENT <UserPlus size={16} />
+             {tx('new_enrollment', 'NEW ENROLLMENT')} <UserPlus size={16} />
           </motion.button>
 
         </div>
       </motion.div>
 
       {/* Footer Branding */}
-      <div style={{ position: "absolute", bottom: "25px", opacity: 0.3, fontSize: "8px", letterSpacing: "3px", fontWeight: "bold" }}>
-        SAMAJWADI CLOUD © 2026
-      </div>
+       <div style={{ position: "absolute", bottom: "25px", opacity: 0.3, fontSize: "8px", letterSpacing: "3px", fontWeight: "bold" }}>
+         {tx('footer_branding', 'SAMAJWADI CLOUD © 2026')}
+       </div>
 
       <style jsx>{`
         @media (max-width: 600px) {

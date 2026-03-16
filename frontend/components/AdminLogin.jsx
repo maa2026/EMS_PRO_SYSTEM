@@ -43,7 +43,7 @@ const AdminLogin = ({ close }) => {
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition-all placeholder:text-gray-700 text-white" 
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none transition-all placeholder:text-gray-700 text-white" 
               placeholder="Enter Admin Username" 
               required
             />
@@ -55,7 +55,7 @@ const AdminLogin = ({ close }) => {
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-blue-500 outline-none transition-all placeholder:text-gray-700 text-white" 
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none transition-all placeholder:text-gray-700 text-white" 
               placeholder="••••••••" 
               required
             />

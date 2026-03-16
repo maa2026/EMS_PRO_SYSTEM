@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Facebook, Youtube, Instagram, Linkedin, MessageCircle, Video, MessageSquare, MapPin, Shield, Fingerprint, CheckCircle, Loader, X } from 'lucide-react';
 
 // ✅ AAPKA PURA ELECTORAL DATA (1-403 Sequence)
 const upData = {
@@ -87,9 +87,11 @@ export default function SignupPage() {
 
   const [formData, setFormData] = useState({
     fullName: "", fatherName: "", dob: "", mobile: "", whatsapp: "",
-    address1: "", tehsil: "", thana: "", pincode: "",
+    address1: "", block: "", tehsil: "", thana: "", pincode: "",
     position: "", district: "", constituency: "", boothNo: "",
-    epic: "", education: "Graduate"
+    epic: "", aadhar: "", education: "Graduate",
+    facebook: "", youtube: "", instagram: "", linkedin: "",
+    snapchat: "", imessage: "", facetime: ""
   });
 
   const [error, setError] = useState("");
@@ -97,6 +99,12 @@ export default function SignupPage() {
   const [isDistOpen, setIsDistOpen] = useState(false);
   const [conSearch, setConSearch] = useState("");
   const [isConOpen, setIsConOpen] = useState(false);
+
+  // 🔐 Security verification state
+  const [geoStatus,    setGeoStatus]   = useState('idle');  // idle|checking|pass|fail|skipped
+  const [bioStatus,    setBioStatus]   = useState('idle');  // idle|pending|done|fail|skipped
+  const [bioCredId,    setBioCredId]   = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const constituencies = useMemo(() => upData[formData.district] || [], [formData.district]);
 
@@ -121,21 +129,110 @@ export default function SignupPage() {
     setIsConOpen(false);
   };
 
+  // --- Geo-fence: checks if worker is within 50 km of selected constituency ---
+  const checkGeoFence = async () => {
+    if (!formData.constituency) {
+      setError('Please select your constituency before the location check.');
+      return false;
+    }
+    setGeoStatus('checking');
+    try {
+      const pos = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 15000, maximumAge: 60000 })
+      );
+      const { latitude: lat, longitude: lng } = pos.coords;
+      const res = await fetch('/api/geo/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat, lng, constituency: formData.constituency, radiusKm: 50 }),
+      });
+      const data = await res.json();
+      if (data.inside || data.advisory) {
+        setGeoStatus('pass');
+        return true;
+      }
+      setGeoStatus('fail');
+      setError(`📍 Location Mismatch: You are ${data.distanceKm} km from ${formData.constituency}. Please verify your constituency selection.`);
+      return false;
+    } catch (_) {
+      // GPS permission denied or unavailable → advisory skip (don't block rural workers)
+      setGeoStatus('skipped');
+      return true;
+    }
+  };
+
+  // --- WebAuthn FIDO2 biometric binding (fingerprint / FaceID) ---
+  const bindBiometric = async () => {
+    if (!window.PublicKeyCredential) {
+      setBioStatus('skipped');  // browser/device doesn't support WebAuthn
+      return null;
+    }
+    setBioStatus('pending');
+    try {
+      const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+      const userId    = new TextEncoder().encode(
+        (formData.mobile || String(Date.now())).slice(0, 64)
+      );
+      const credential = await navigator.credentials.create({
+        publicKey: {
+          rp:   { name: 'EMS.UP Command Center', id: window.location.hostname },
+          user: {
+            id:          userId,
+            name:        formData.mobile        || 'worker',
+            displayName: formData.fullName       || 'EMS Worker',
+          },
+          pubKeyCredParams: [
+            { alg: -7,   type: 'public-key' },  // ES256 (preferred)
+            { alg: -257, type: 'public-key' },  // RS256 (fallback)
+          ],
+          challenge,
+          authenticatorSelection: {
+            userVerification: 'preferred',
+            residentKey:      'discouraged',
+          },
+          timeout:     60000,
+          attestation: 'none',
+        },
+      });
+      // Encode rawId as base64 for storage
+      const rawIdBytes = Array.from(new Uint8Array(credential.rawId));
+      const credId     = btoa(String.fromCharCode(...rawIdBytes));
+      setBioCredId(credId);
+      setBioStatus('done');
+      return credId;
+    } catch (err) {
+      // User cancelled or device error — treat as advisory skip
+      setBioStatus('fail');
+      return null;
+    }
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
 
-    const required = ["fullName", "fatherName", "dob", "mobile", "address1", "tehsil", "pincode", "position", "district", "constituency", "boothNo", "epic"];
+    const required = ["fullName", "fatherName", "dob", "mobile", "address1", "tehsil", "pincode", "position", "district", "constituency", "boothNo", "epic", "aadhar"];
     const missing = required.filter(f => !formData[f]);
-
     if (missing.length > 0) {
       setError("SECURITY ALERT: Please complete all required fields (*)");
       window.scrollTo(0, 0);
       return;
     }
 
+    setIsSubmitting(true);
+
+    // 🗺️ Geo-fence pre-flight (auto-runs if not already passed)
+    if (geoStatus !== 'pass' && geoStatus !== 'skipped') {
+      const geoOk = await checkGeoFence();
+      if (!geoOk) { setIsSubmitting(false); return; }
+    }
+
+    // 🔐 Biometric binding (if not already done)
+    let credId = bioCredId;
+    if (bioStatus === 'idle') credId = await bindBiometric();
+
     try {
-      const response = await fetch('http://localhost:5000/api/workers/apply', {
+      const response = await fetch('/api/workers/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -145,6 +242,7 @@ export default function SignupPage() {
           primaryMobile: formData.mobile,
           whatsapp: formData.whatsapp,
           addressLine1: formData.address1,
+          block: formData.block,
           tehsil: formData.tehsil,
           policeStation: formData.thana,
           pincode: formData.pincode,
@@ -153,7 +251,19 @@ export default function SignupPage() {
           constituency: formData.constituency,
           boothNo: formData.boothNo,
           voterId: formData.epic,
-          education: formData.education
+          aadhar: formData.aadhar,
+          education: formData.education,
+          socialMedia: {
+            facebook: formData.facebook,
+            youtube: formData.youtube,
+            instagram: formData.instagram,
+            linkedin: formData.linkedin,
+            snapchat: formData.snapchat,
+            imessage: formData.imessage,
+            facetime: formData.facetime,
+          },
+          biometricCredentialId: credId || null,
+          geoVerified: geoStatus === 'pass',
         }),
       });
 
@@ -161,110 +271,316 @@ export default function SignupPage() {
 
       if (response.ok) {
         alert(`✅ Registration Successful!\nReg No: ${result.regNo}\n\n72 hours mein verification poora hoga.`);
-        // Sahi Portal Redirect
-        router.push('/portal/super-admin/login'); 
+        router.push('/portal/super-admin/login');
       } else {
         setError(result.error || "Submission Failed");
       }
     } catch (err) {
       setError("❌ Server connection failed. Check if Backend is running.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const s = {
-    container: { backgroundColor: "#000", minHeight: "100vh", padding: "40px 20px", color: "#fff", display: "flex", flexDirection: "column", alignItems: "center" },
-    card: { maxWidth: "1100px", width: "100%", background: "rgba(10, 10, 10, 0.95)", padding: "45px", borderRadius: "30px", border: "1px solid #1a1a1a", position: "relative" },
-    secTitle: { fontSize: "16px", fontWeight: "800", marginBottom: "25px", display: "flex", alignItems: "center", color: "#DA251D", textTransform: "uppercase" },
-    grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "20px", marginBottom: "30px" },
-    input: { background: "#0c0c0c", border: "1px solid #222", padding: "14px", borderRadius: "12px", color: "#fff", width: "100%", fontSize: "14px", outline: "none" },
-    label: { color: "#444", fontSize: "11px", marginBottom: "8px", display: "block", fontWeight: "800" },
-    dropdown: { position: "absolute", zIndex: 100, width: "100%", background: "#0c0c0c", border: "1px solid #222", borderRadius: "12px", maxHeight: "200px", overflowY: "auto", marginTop: "5px" },
-    dropItem: { padding: "12px 15px", fontSize: "13px", cursor: "pointer", borderBottom: "1px solid #151515" },
-    btn: { width: "100%", padding: "18px", background: "#DA251D", color: "#fff", border: "none", borderRadius: "14px", fontWeight: "900", cursor: "pointer", fontSize: "16px" }
+    container: "min-h-screen bg-[#000] text-white flex flex-col items-center justify-center p-4 md:p-6",
+    card: "w-full max-w-5xl bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-2xl relative",
+    secTitle: "text-lg md:text-xl font-black mb-6 md:mb-8 flex items-center text-red-400 uppercase tracking-widest",
+    grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8",
+    input: "w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 md:px-5 md:py-4 text-sm md:text-base text-white outline-none focus:border-red-500 transition-all placeholder:text-gray-500",
+    label: "text-xs font-bold text-gray-400 uppercase mb-2 ml-1 tracking-widest",
+    dropdown: "absolute z-50 w-full mt-2 bg-black/60 border border-white/10 rounded-xl shadow-2xl max-h-60 overflow-y-auto",
+    dropItem: "px-4 py-3 text-sm md:text-base cursor-pointer transition-colors border-b border-gray-800 last:border-0 hover:bg-red-600/20 hover:text-red-200",
+    btn: "w-full py-4 md:py-5 bg-red-600 hover:bg-red-700 text-white border-none rounded-xl font-black uppercase tracking-widest text-sm md:text-base transition-all active:scale-95 shadow-lg shadow-red-600/30"
   };
 
   return (
-    <div style={s.container}>
-      <div style={s.card}>
-        {error && <div style={{ color: "#DA251D", marginBottom: "20px" }}>{error}</div>}
+    <div className={s.container}>
+      <div className={s.card}>
+        {error && <div className="text-red-400 mb-6 text-center font-bold">{error}</div>}
         <form onSubmit={handleSignup}>
-          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-             <h1 style={{ fontSize: '36px', fontWeight: '900' }}>Sangathan Setu</h1>
-             <p style={{ color: '#DA251D', fontSize: '10px' }}>UP UNIT • SECURE ENROLLMENT</p>
+          <div className="text-center mb-8 md:mb-10">
+             <h1 className="text-3xl md:text-5xl font-black">Sangathan Setu</h1>
+             <p className="text-red-400 text-xs md:text-sm uppercase tracking-widest mt-2">UP UNIT • SECURE ENROLLMENT</p>
           </div>
 
-          <div style={s.secTitle}>1. Personal Profile</div>
-          <div style={s.grid}>
-            <div style={{ position: 'relative' }}>
-              <label style={s.label}>Full Name *</label>
-              <input required style={s.input} value={formData.fullName} onChange={(e)=>setFormData({...formData, fullName: e.target.value})} />
+          <div className={s.secTitle}>1. Personal Profile</div>
+          <div className={s.grid}>
+            <div>
+              <label className={s.label}>Full Name *</label>
+              <input required className={s.input} value={formData.fullName} onChange={(e)=>setFormData({...formData, fullName: e.target.value})} />
             </div>
-            <div><label style={s.label}>Father's Name *</label><input required style={s.input} value={formData.fatherName} onChange={(e)=>setFormData({...formData, fatherName: e.target.value})} /></div>
-            <div><label style={s.label}>Date of Birth *</label><input required type="date" style={s.input} value={formData.dob} onChange={(e)=>setFormData({...formData, dob: e.target.value})} /></div>
-            <div><label style={s.label}>Primary Mobile *</label><input required style={s.input} value={formData.mobile} onChange={(e)=>setFormData({...formData, mobile: e.target.value})} maxLength="10" /></div>
-            <div><label style={s.label}>WhatsApp</label><input style={s.input} value={formData.whatsapp} onChange={(e)=>setFormData({...formData, whatsapp: e.target.value})} /></div>
+            <div>
+              <label className={s.label}>Father's Name *</label>
+              <input required className={s.input} value={formData.fatherName} onChange={(e)=>setFormData({...formData, fatherName: e.target.value})} />
+            </div>
+            <div>
+              <label className={s.label}>Date of Birth *</label>
+              <input required type="date" className={s.input} value={formData.dob} onChange={(e)=>setFormData({...formData, dob: e.target.value})} />
+            </div>
+            <div>
+              <label className={s.label}>Primary Mobile *</label>
+              <input required className={s.input} value={formData.mobile} onChange={(e)=>setFormData({...formData, mobile: e.target.value})} maxLength="10" />
+            </div>
+            <div>
+              <label className={s.label}>WhatsApp</label>
+              <input className={s.input} placeholder="+91 XXXXXXXXXX" value={formData.whatsapp} onChange={(e)=>setFormData({...formData, whatsapp: e.target.value})} />
+            </div>
           </div>
 
-          <div style={s.secTitle}>2. Residential</div>
-          <div style={s.grid}>
-            <div><label style={s.label}>Address Line 1 *</label><input required style={s.input} value={formData.address1} onChange={(e)=>setFormData({...formData, address1: e.target.value})} /></div>
-            <div><label style={s.label}>Tehsil *</label><input required style={s.input} value={formData.tehsil} onChange={(e)=>setFormData({...formData, tehsil: e.target.value})} /></div>
-            <div><label style={s.label}>Police Station</label><input style={s.input} value={formData.thana} onChange={(e)=>setFormData({...formData, thana: e.target.value})} /></div>
-            <div><label style={s.label}>PinCode *</label><input required style={s.input} value={formData.pincode} onChange={(e)=>setFormData({...formData, pincode: e.target.value})} /></div>
+          <div className={s.secTitle}>2. Residential</div>
+          <div className={s.grid}>
+            <div className="md:col-span-2 lg:col-span-3">
+              <label className={s.label}>Address Line 1 *</label>
+              <input required className={s.input} placeholder="House No, Street, Mohalla/Village" value={formData.address1} onChange={(e)=>setFormData({...formData, address1: e.target.value})} />
+            </div>
+            <div>
+              <label className={s.label}>Block</label>
+              <input className={s.input} placeholder="Block name" value={formData.block} onChange={(e)=>setFormData({...formData, block: e.target.value})} />
+            </div>
+            <div>
+              <label className={s.label}>Tehsil *</label>
+              <input required className={s.input} placeholder="Tehsil" value={formData.tehsil} onChange={(e)=>setFormData({...formData, tehsil: e.target.value})} />
+            </div>
+            <div>
+              <label className={s.label}>Police Station</label>
+              <input className={s.input} placeholder="Thana/Police Station" value={formData.thana} onChange={(e)=>setFormData({...formData, thana: e.target.value})} />
+            </div>
+            <div>
+              <label className={s.label}>PinCode *</label>
+              <input required className={s.input} placeholder="6-digit PIN" maxLength="6" value={formData.pincode} onChange={(e)=>setFormData({...formData, pincode: e.target.value})} />
+            </div>
           </div>
 
-          <div style={s.secTitle}>3. Organization & Location</div>
-          <div style={s.grid}>
-            <div style={{ position: 'relative' }}>
-              <label style={s.label}>Position *</label>
-              <select required style={s.input} value={formData.position} onChange={(e)=>setFormData({...formData, position: e.target.value})}>
+          <div className={s.secTitle}>3. Organization & Location</div>
+          <div className={s.grid}>
+            <div className="relative">
+              <label className={s.label}>Position *</label>
+              <select required className={s.input} value={formData.position} onChange={(e)=>setFormData({...formData, position: e.target.value})}>
                 <option value="">Select Position</option>
                 <option value="BP">Booth President</option>
                 <option value="BM">Booth Manager</option>
                 <option value="JSS">Jansampark Sathi</option>
               </select>
             </div>
-            
+
             {/* DISTRICT DROPDOWN */}
-            <div style={{ position: 'relative' }}>
-              <label style={s.label}>District *</label>
-              <input type="text" style={s.input} placeholder="Search District..." value={distSearch} 
+            <div className="relative">
+              <label className={s.label}>District *</label>
+              <input type="text" className={s.input} placeholder="Search District..." value={distSearch}
                 onChange={(e)=>{setDistSearch(e.target.value); setIsDistOpen(true);}} onFocus={()=>setIsDistOpen(true)} />
               {isDistOpen && (
-                <div style={s.dropdown}>
-                  {filteredDistricts.map(d=>(<div key={d} style={s.dropItem} onClick={()=>handleDistSelect(d)}>{d}</div>))}
+                <div className={s.dropdown}>
+                  {filteredDistricts.map(d=>(<div key={d} className={s.dropItem} onClick={()=>handleDistSelect(d)}>{d}</div>))}
                 </div>
               )}
             </div>
 
             {/* CONSTITUENCY DROPDOWN */}
-            <div style={{ position: 'relative' }}>
-              <label style={s.label}>Constituency *</label>
-              <input type="text" style={s.input} placeholder={formData.district ? "Search AC..." : "Select District First"} 
-                value={conSearch} disabled={!formData.district} 
+            <div className="relative">
+              <label className={s.label}>Constituency *</label>
+              <input type="text" className={s.input} placeholder={formData.district ? "Search AC..." : "Select District First"}
+                value={conSearch} disabled={!formData.district}
                 onChange={(e)=>{setConSearch(e.target.value); setIsConOpen(true);}} onFocus={()=>setIsConOpen(true)} />
               {isConOpen && formData.district && (
-                <div style={s.dropdown}>
-                  {filteredConstituencies.map(c=>(<div key={c} style={s.dropItem} onClick={()=>handleConSelect(c)}>{c}</div>))}
+                <div className={s.dropdown}>
+                  {filteredConstituencies.map(c=>(<div key={c} className={s.dropItem} onClick={()=>handleConSelect(c)}>{c}</div>))}
                 </div>
               )}
             </div>
 
-            <div><label style={s.label}>Booth No *</label><input required style={s.input} value={formData.boothNo} onChange={(e)=>setFormData({...formData, boothNo: e.target.value})} /></div>
+            <div>
+              <label className={s.label}>Booth No *</label>
+              <input required className={s.input} value={formData.boothNo} onChange={(e)=>setFormData({...formData, boothNo: e.target.value})} />
+            </div>
           </div>
 
-          <div style={s.secTitle}>4. Identity</div>
-          <div style={s.grid}>
-            <div><label style={s.label}>Voter ID (EPIC) *</label><input required style={s.input} value={formData.epic} onChange={(e)=>setFormData({...formData, epic: e.target.value})} /></div>
-            <div><label style={s.label}>Education</label>
-              <select style={s.input} value={formData.education} onChange={(e)=>setFormData({...formData, education: e.target.value})}>
-                <option>Graduate</option>
-                <option>12th</option>
+          <div className={s.secTitle}>4. Identity & Education</div>
+          <div className={s.grid}>
+            <div>
+              <label className={s.label}>Voter ID (EPIC) *</label>
+              <input required className={s.input} placeholder="e.g. ABC1234567" value={formData.epic} onChange={(e)=>setFormData({...formData, epic: e.target.value.toUpperCase()})} />
+            </div>
+            <div>
+              <label className={s.label}>Aadhar Card *</label>
+              <input required className={s.input} placeholder="12-digit Aadhar No." maxLength="12" value={formData.aadhar} onChange={(e)=>setFormData({...formData, aadhar: e.target.value.replace(/\D/g,'')})} />
+            </div>
+            <div>
+              <label className={s.label}>Education *</label>
+              <select required className={s.input} value={formData.education} onChange={(e)=>setFormData({...formData, education: e.target.value})}>
+                <option value="">Select Education</option>
+                <option value="5th">5th Pass</option>
+                <option value="8th">8th Pass</option>
+                <option value="10th">10th / Matric</option>
+                <option value="12th">12th / Intermediate</option>
+                <option value="ITI">ITI / Diploma</option>
+                <option value="Graduate">Graduate (BA/BSc/BCom)</option>
+                <option value="PostGraduate">Post Graduate (MA/MSc)</option>
+                <option value="BEd">B.Ed / Teacher Training</option>
+                <option value="BCA/MCA">BCA / MCA</option>
+                <option value="BTech">B.Tech / Engineering</option>
+                <option value="LLB">LLB / Law</option>
+                <option value="MBBS">MBBS / Medical</option>
+                <option value="PhD">PhD / Research</option>
+                <option value="Other">Other</option>
               </select>
             </div>
           </div>
 
-          <button type="submit" style={s.btn}>VERIFY & SUBMIT ENROLLMENT</button>
+          <div className={s.secTitle}>5. Social Media Platforms</div>
+          <div className={s.grid}>
+
+            {/* Facebook */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <Facebook size={14} className="text-[#1877F2]" />
+                Facebook
+              </label>
+              <div className="relative">
+                <Facebook size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1877F2]" />
+                <input className={s.input + ' pl-10'} placeholder="facebook.com/yourprofile" value={formData.facebook} onChange={(e)=>setFormData({...formData, facebook: e.target.value})} />
+              </div>
+            </div>
+
+            {/* YouTube */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <Youtube size={14} className="text-[#FF0000]" />
+                YouTube
+              </label>
+              <div className="relative">
+                <Youtube size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#FF0000]" />
+                <input className={s.input + ' pl-10'} placeholder="youtube.com/@channel" value={formData.youtube} onChange={(e)=>setFormData({...formData, youtube: e.target.value})} />
+              </div>
+            </div>
+
+            {/* Instagram */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <Instagram size={14} className="text-[#E1306C]" />
+                Instagram
+              </label>
+              <div className="relative">
+                <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#E1306C]" />
+                <input className={s.input + ' pl-10'} placeholder="instagram.com/yourhandle" value={formData.instagram} onChange={(e)=>setFormData({...formData, instagram: e.target.value})} />
+              </div>
+            </div>
+
+            {/* LinkedIn */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <Linkedin size={14} className="text-[#0A66C2]" />
+                LinkedIn
+              </label>
+              <div className="relative">
+                <Linkedin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#0A66C2]" />
+                <input className={s.input + ' pl-10'} placeholder="linkedin.com/in/yourprofile" value={formData.linkedin} onChange={(e)=>setFormData({...formData, linkedin: e.target.value})} />
+              </div>
+            </div>
+
+            {/* Snapchat */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <span style={{fontSize:'14px'}}>👻</span>
+                Snapchat
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base leading-none">👻</span>
+                <input className={s.input + ' pl-10'} placeholder="Snapchat username" value={formData.snapchat} onChange={(e)=>setFormData({...formData, snapchat: e.target.value})} />
+              </div>
+            </div>
+
+            {/* iMessage */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <MessageCircle size={14} className="text-[#34C759]" />
+                iMessage (Apple ID)
+              </label>
+              <div className="relative">
+                <MessageCircle size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#34C759]" />
+                <input className={s.input + ' pl-10'} placeholder="Apple ID / Email" value={formData.imessage} onChange={(e)=>setFormData({...formData, imessage: e.target.value})} />
+              </div>
+            </div>
+
+            {/* FaceTime */}
+            <div>
+              <label className={s.label + ' flex items-center gap-2'}>
+                <Video size={14} className="text-[#34C759]" />
+                FaceTime
+              </label>
+              <div className="relative">
+                <Video size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#34C759]" />
+                <input className={s.input + ' pl-10'} placeholder="Phone or Apple ID" value={formData.facetime} onChange={(e)=>setFormData({...formData, facetime: e.target.value})} />
+              </div>
+            </div>
+
+          </div>
+
+          {/* ✅ SECTION 6: SECURITY VERIFICATION */}
+          <div className={s.secTitle}>6. Security Verification</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+
+            {/* Geo-fence check */}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+              <div className="flex items-center gap-2 text-sm font-bold text-gray-300 uppercase tracking-widest">
+                <MapPin size={14} className="text-blue-400" /> Location Verification
+              </div>
+              <p className="text-xs text-gray-500">Verify that you are within your selected constituency boundary (advisory check — GPS must be enabled).</p>
+              <button type="button" onClick={checkGeoFence} disabled={geoStatus === 'checking' || geoStatus === 'pass'}
+                className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold uppercase tracking-widest transition-all"
+                style={{ background: geoStatus === 'pass' ? '#16a34a22' : geoStatus === 'fail' ? '#dc262622' : '#1d4ed822',
+                         border: `1px solid ${geoStatus === 'pass' ? '#16a34a' : geoStatus === 'fail' ? '#dc2626' : '#1d4ed8'}`,
+                         color: geoStatus === 'pass' ? '#4ade80' : geoStatus === 'fail' ? '#f87171' : '#60a5fa' }}>
+                {geoStatus === 'checking' && <Loader size={14} className="animate-spin" />}
+                {geoStatus === 'pass'     && <CheckCircle size={14} />}
+                {geoStatus === 'fail'     && <X size={14} />}
+                {geoStatus === 'idle'     && <MapPin size={14} />}
+                {geoStatus === 'skipped'  && <CheckCircle size={14} />}
+                {geoStatus === 'checking' ? 'Detecting Location...' :
+                 geoStatus === 'pass'     ? 'Location Verified ✓' :
+                 geoStatus === 'fail'     ? 'Verification Failed' :
+                 geoStatus === 'skipped'  ? 'GPS Unavailable (Skipped)' :
+                 'Check My Location'}
+              </button>
+            </div>
+
+            {/* WebAuthn biometric */}
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col gap-3">
+              <div className="flex items-center gap-2 text-sm font-bold text-gray-300 uppercase tracking-widest">
+                <Fingerprint size={14} className="text-purple-400" /> Biometric Binding
+              </div>
+              <p className="text-xs text-gray-500">Bind your fingerprint or Face ID to this enrollment for device-level authentication.</p>
+              <button type="button" onClick={bindBiometric} disabled={bioStatus === 'pending' || bioStatus === 'done'}
+                className="flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold uppercase tracking-widest transition-all"
+                style={{ background: bioStatus === 'done'    ? '#7c3aed22' : bioStatus === 'fail' ? '#dc262622' : '#4c1d9522',
+                         border: `1px solid ${bioStatus === 'done' ? '#7c3aed' : bioStatus === 'fail' ? '#dc2626' : '#7c3aed'}`,
+                         color: bioStatus === 'done' ? '#c084fc' : bioStatus === 'fail' ? '#f87171' : '#a78bfa' }}>
+                {bioStatus === 'pending' && <Loader size={14} className="animate-spin" />}
+                {bioStatus === 'done'    && <CheckCircle size={14} />}
+                {bioStatus === 'fail'    && <X size={14} />}
+                {(bioStatus === 'idle' || bioStatus === 'skipped') && <Fingerprint size={14} />}
+                {bioStatus === 'pending' ? 'Scan Biometric...' :
+                 bioStatus === 'done'    ? 'Biometric Bound ✓' :
+                 bioStatus === 'fail'    ? 'Skipped / Cancelled' :
+                 bioStatus === 'skipped' ? 'Device Not Supported' :
+                 'Bind Fingerprint / Face ID'}
+              </button>
+            </div>
+
+          </div>
+
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-6 text-xs text-gray-400">
+            <Shield size={14} className="text-red-400 flex-shrink-0" />
+            Location and biometric checks are advisory. Enrollment will proceed even if your device doesn't support them. False information is a punishable offence.
+          </div>
+
+          <button type="submit" disabled={isSubmitting} className={s.btn
+            + (isSubmitting ? ' opacity-60 cursor-not-allowed' : '')}>
+            {isSubmitting
+              ? <span className="flex items-center justify-center gap-2"><Loader size={16} className="animate-spin" />Submitting...</span>
+              : 'VERIFY & SUBMIT ENROLLMENT'
+            }
+          </button>
         </form>
       </div>
     </div>

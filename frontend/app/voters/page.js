@@ -142,7 +142,7 @@ export default function EMSVoterSearch() {
               <h2 className="text-xl font-black italic text-red-600 uppercase tracking-tighter">Database Results</h2>
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-black/40 px-3 py-1 rounded-full border border-white/10">{results.length} Matches</span>
             </div>
-            <div className="overflow-x-auto">
+            <div className="table-responsive md:table-mobile-cards">
               <table className="w-full text-left">
                 <thead>
                   <tr className="text-[10px] text-gray-500 uppercase tracking-widest border-b border-white/5 bg-black/20">
@@ -155,10 +155,10 @@ export default function EMSVoterSearch() {
                 <tbody className="divide-y divide-white/5">
                   {results.map((voter) => (
                     <tr key={voter.id} className="hover:bg-red-600/5 transition-all group cursor-pointer" onClick={() => setSelectedVoter(voter)}>
-                      <td className="p-5 font-bold uppercase text-sm text-white group-hover:text-red-500">{voter.name}</td>
-                      <td className="p-5 font-mono text-xs text-gray-400 group-hover:text-white">{voter.voter_id}</td>
-                      <td className="p-5 text-xs text-gray-500 uppercase italic font-medium">{voter.relative}</td>
-                      <td className="p-5 text-center">
+                      <td data-label="Voter Name" className="p-5 font-bold uppercase text-sm text-white group-hover:text-red-500">{voter.name}</td>
+                      <td data-label="EPIC ID" className="p-5 font-mono text-xs text-gray-400 group-hover:text-white">{voter.voter_id}</td>
+                      <td data-label="Relative Name" className="p-5 text-xs text-gray-500 uppercase italic font-medium">{voter.relative}</td>
+                      <td data-label="Action" className="p-5 text-center">
                         <button className="text-[9px] font-black italic bg-red-600/10 text-red-500 px-4 py-2 rounded-full border border-red-600/20 hover:bg-red-600 hover:text-white transition-all uppercase tracking-widest">View Slip</button>
                       </td>
                     </tr>

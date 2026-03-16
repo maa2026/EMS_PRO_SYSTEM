@@ -21,10 +21,12 @@ const VoterSchema = new mongoose.Schema({
   mobile: { type: String },
   
   // --- Strategic Intelligence ---
-  category: { type: String, enum: ['Gen', 'OBC', 'SC', 'ST'] },
-  subCaste: { type: String },
+  category:   { type: String, enum: ['Gen', 'OBC', 'SC', 'ST'] },
+  subCaste:   { type: String },
   employment: { type: String },
   grievances: { type: String }, // Mudde
+  sentiment:  { type: String, enum: ['Pro', 'Anti', 'Neutral', 'Swing'], default: 'Neutral' },
+  gender:     { type: String, enum: ['Male', 'Female', 'Other'] },
   
   // --- Admin Status ---
   status: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' }

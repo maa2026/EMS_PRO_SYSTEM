@@ -1,23 +1,383 @@
 @import "tailwindcss";
 
 /* 🛡️ ADMIN RAM LAKHAN MASTER VARIABLES */
-:root {
+:root,
+[data-theme="dark"] {
   --background: #010804;
   --foreground: #ffffff;
+  --surface: #0d1f14;
+  --surface2: #162b1c;
+  --border-clr: rgba(255,255,255,0.07);
+  --muted: #6b7280;
   --ems-red: #DA251D;
   --ems-green: #00914C;
   --ems-orange: #FFA500;
-  --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+  --glass-bg: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+  --navbar-bg: rgba(2,12,6,0.95);
+  --card-bg: rgba(13,31,20,0.9);
+  --input-bg: rgba(0,0,0,0.5);
+  --input-border: rgba(255,255,255,0.1);
+  --shadow-clr: rgba(0,0,0,0.8);
+}
+
+[data-theme="light"] {
+  --background: #f4f6f3;
+  --foreground: #0f1f14;
+  --surface: #ffffff;
+  --surface2: #e8f0ea;
+  --border-clr: rgba(0,0,0,0.1);
+  --muted: #6b7280;
+  --ems-red: #DA251D;
+  --ems-green: #00914C;
+  --ems-orange: #d97706;
+  --glass-bg: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(240,247,242,0.8) 100%);
+  --navbar-bg: rgba(255,255,255,0.97);
+  --card-bg: rgba(255,255,255,0.95);
+  --input-bg: rgba(255,255,255,0.9);
+  --input-border: rgba(0,0,0,0.15);
+  --shadow-clr: rgba(0,0,0,0.12);
+}
+
+/* 📱 MOBILE RESPONSIVE BASE STYLES */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background-color: var(--background) !important;
-  color: var(--foreground);
+  color: var(--foreground) !important;
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light theme overrides for common elements */
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background-color: var(--input-bg) !important;
+  color: var(--foreground) !important;
+  border-color: var(--input-border) !important;
+}
+
+[data-theme="light"] .card-responsive {
+  background: var(--glass-bg);
+  border-color: var(--border-clr);
+}
+
+/* Smooth transition for all bg/color bearing elements */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+
+/* 📱 MOBILE FIRST RESPONSIVE UTILITIES */
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 640px) {
+  .container-responsive {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-responsive {
+    padding: 0 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    padding: 0 40px;
+  }
+}
+
+/* 📱 RESPONSIVE TEXT SCALING */
+.text-responsive-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+.text-responsive-sm { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+.text-responsive-base { font-size: clamp(1rem, 3vw, 1.125rem); }
+.text-responsive-lg { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+.text-responsive-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+.text-responsive-2xl { font-size: clamp(1.5rem, 5vw, 2rem); }
+.text-responsive-3xl { font-size: clamp(2rem, 6vw, 3rem); }
+.text-responsive-4xl { font-size: clamp(3rem, 8vw, 4rem); }
+.text-responsive-5xl { font-size: clamp(4rem, 10vw, 5rem); }
+
+/* 📱 RESPONSIVE SPACING */
+.space-responsive-xs { margin: clamp(0.5rem, 2vw, 1rem); }
+.space-responsive-sm { margin: clamp(1rem, 3vw, 1.5rem); }
+.space-responsive-md { margin: clamp(1.5rem, 4vw, 2rem); }
+.space-responsive-lg { margin: clamp(2rem, 5vw, 3rem); }
+.space-responsive-xl { margin: clamp(3rem, 6vw, 4rem); }
+
+/* 📱 RESPONSIVE PADDING */
+.p-responsive-xs { padding: clamp(0.5rem, 2vw, 1rem); }
+.p-responsive-sm { padding: clamp(1rem, 3vw, 1.5rem); }
+.p-responsive-md { padding: clamp(1.5rem, 4vw, 2rem); }
+.p-responsive-lg { padding: clamp(2rem, 5vw, 3rem); }
+.p-responsive-xl { padding: clamp(3rem, 6vw, 4rem); }
+
+/* 📱 MOBILE FRIENDLY FORM ELEMENTS */
+.form-input-mobile {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 16px; /* Prevents zoom on iOS */
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-input-mobile:focus {
+  border-color: var(--ems-red);
+  box-shadow: 0 0 0 2px rgba(218, 37, 29, 0.2);
+}
+
+@media (min-width: 768px) {
+  .form-input-mobile {
+    padding: 16px 20px;
+    font-size: 18px;
+  }
+}
+
+/* 📱 RESPONSIVE BUTTONS */
+.btn-responsive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+  min-height: 44px; /* Touch target size */
+}
+
+.btn-responsive:hover {
+  transform: translateY(-1px);
+}
+
+.btn-responsive:active {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .btn-responsive {
+    padding: 16px 24px;
+    font-size: 16px;
+  }
+}
+
+/* 📱 RESPONSIVE CARDS */
+.card-responsive {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .card-responsive {
+    padding: 20px;
+    margin: 12px 0;
+    border-radius: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-responsive {
+    padding: 24px;
+    margin: 16px 0;
+  }
+}
+
+/* 📱 MOBILE NAVIGATION */
+.nav-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 80px 20px 20px;
+  overflow-y: auto;
+}
+
+.nav-mobile-overlay a {
+  display: block;
+  padding: 16px 0;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.nav-mobile-overlay a:hover {
+  color: var(--ems-red);
+  padding-left: 16px;
+}
+
+/* 📱 RESPONSIVE GRIDS */
+.grid-responsive-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .grid-responsive-1 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-responsive-1 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+.grid-responsive-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .grid-responsive-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+/* 📱 MOBILE TABLE */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+  min-width: 600px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .table-responsive table {
+    min-width: auto;
+  }
+}
+
+/* 📱 MOBILE CARD TABLES */
+.table-mobile-cards {
+  display: block;
+}
+
+.table-mobile-cards thead {
+  display: none;
+}
+
+.table-mobile-cards tbody tr {
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.table-mobile-cards tbody td {
+  display: block;
+  text-align: left;
+  padding: 8px 0;
+  border: none;
+}
+
+.table-mobile-cards tbody td:before {
+  content: attr(data-label) ": ";
+  font-weight: bold;
+  color: #DA251D;
+  text-transform: uppercase;
+  font-size: 12px;
+  display: inline-block;
+  min-width: 100px;
+}
+
+@media (min-width: 768px) {
+  .table-mobile-cards {
+    display: table;
+  }
+  
+  .table-mobile-cards thead {
+    display: table-header-group;
+  }
+  
+  .table-mobile-cards tbody tr {
+    display: table-row;
+    border: none;
+    margin-bottom: 0;
+    padding: 0;
+    background: transparent;
+  }
+  
+  .table-mobile-cards tbody td {
+    display: table-cell;
+    text-align: left;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .table-mobile-cards tbody td:before {
+    display: none;
+  }
+}
+
+/* 📱 TOUCH FRIENDLY INTERACTIONS */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 📱 RESPONSIVE IMAGES */
+.img-responsive {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
 }
 
 /* 💎 Elite Glass Container - IPAC Takkar Look */
@@ -48,17 +408,64 @@ body {
 
 .neon-glow-red:hover {
   box-shadow: 0 0 40px rgba(218, 37, 29, 0.4);
-  background: rgba(218, 37, 29, 0.15) !important;
-  border-color: var(--ems-red) !important;
-  transform: translateY(-2px);
 }
-
 /* 📱 Mobile Specific */
 @media (max-width: 640px) {
   .elite-card {
     border-radius: 35px;
     padding: 25px 20px !important;
   }
+}
+
+/* 🪟 Native selects + inputs themed for dark UI */
+select,
+textarea,
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+input[type="search"],
+input[type="password"] {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--foreground);
+  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ems-red) 50%),
+    linear-gradient(135deg, var(--ems-red) 50%, transparent 50%),
+    radial-gradient(circle at center, rgba(255,255,255,0.15), rgba(255,255,255,0));
+  background-repeat: no-repeat;
+  background-position: calc(100% - 0.9rem) center, calc(100% - 0.6rem) center, center;
+  background-size: 8px 8px, 8px 8px, 100% 100%;
+  padding-right: 2.5rem;
+}
+
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus,
+input[type="password"]:focus {
+  border-color: rgba(218, 37, 29, 0.8);
+  box-shadow: 0 0 0 3px rgba(218, 37, 29, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+option {
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--foreground);
 }
 
 /* 🛰️ Scrollbar */

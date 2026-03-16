@@ -14,8 +14,8 @@ const DarkDropdown = () => {
       {/* Main Select Box */}
       <div 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-4 py-3 cursor-pointer rounded-xl border transition-all duration-300 
-          ${isOpen ? 'border-blue-500 bg-[#1e293b] shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-slate-700 bg-[#0f172a] hover:border-slate-500'}`}
+        className={`w-full flex items-center justify-between px-4 py-3 cursor-pointer rounded-xl border transition-all duration-200 
+          ${isOpen ? 'border-[rgba(218,37,29,0.8)] bg-[rgba(255,255,255,0.07)] shadow-[0_0_0_3px_rgba(218,37,29,0.2)]' : 'border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.05)] hover:border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.07)]'}`}
       >
         <span className={`text-sm ${selected === "Select Role" ? 'text-gray-500' : 'text-white font-medium'}`}>
           {selected}
@@ -23,7 +23,7 @@ const DarkDropdown = () => {
         
         {/* Arrow Icon */}
         <svg 
-          className={`w-5 h-5 text-blue-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+          className={`w-5 h-5 text-[#DA251D] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -34,7 +34,7 @@ const DarkDropdown = () => {
 
       {/* Dropdown Menu (The Options) */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-[#1e293b] border border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 w-full mt-2 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.12)] rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
           {options.map((option, index) => (
             <div 
               key={index}
@@ -42,7 +42,7 @@ const DarkDropdown = () => {
                 setSelected(option);
                 setIsOpen(false);
               }}
-              className="px-4 py-3 text-sm text-gray-200 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors border-b border-slate-700/50 last:border-0"
+              className="px-4 py-3 text-sm text-gray-200 hover:bg-[rgba(218,37,29,0.1)] hover:text-white cursor-pointer transition-all duration-200 border-b border-[rgba(255,255,255,0.03)] last:border-0"
             >
               {option}
             </div>

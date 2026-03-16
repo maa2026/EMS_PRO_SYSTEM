@@ -6,6 +6,7 @@ import {
   Phone, ShieldCheck, Database, ChevronRight, Briefcase, 
   ShieldAlert, Lock, CheckCircle2, Smile, Meh, Frown, LayoutGrid, Globe, Home, BarChart3
 } from "lucide-react";
+import SearchableDropdown from "../../../components/SearchableDropdown";
 
 export default function VoterIntelligenceNode() {
   const [isSynced, setIsSynced] = useState(false);
@@ -63,16 +64,57 @@ export default function VoterIntelligenceNode() {
     ]);
   };
 
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState('');
+
   const handleSync = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setHousehold(prev => ({ ...prev, lat: pos.coords.latitude, long: pos.coords.longitude }));
+    const doSync = async (lat, lng) => {
+      setSyncing(true);
+      setSyncMsg('');
+      const updatedHousehold = { ...household, lat, long: lng };
+      setHousehold(updatedHousehold);
+      try {
+        const res = await fetch('/api/voters/sync-household', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            members,
+            householdDetails: updatedHousehold,
+            metadata: {
+              agent:         intelligenceContext.agent.name,
+              agentId:       intelligenceContext.agent.id,
+              booth:         intelligenceContext.booth.name,
+              constituency:  intelligenceContext.admin.constituency,
+              district:      intelligenceContext.admin.district,
+              zone:          intelligenceContext.admin.zone,
+            }
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          setSyncMsg(`✅ ${data.count} records synced. Family ID: ${data.familyId}`);
+          setIsSynced(true);
+          setGlobalHouseholdCount(p => p + 1);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          setSyncMsg('❌ Sync failed — please retry.');
+        }
+      } catch {
+        setSyncMsg('⚠️ Server se connection nahi hua. Data saved locally.');
         setIsSynced(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, () => { setIsSynced(true); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      } finally {
+        setSyncing(false);
+      }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => doSync(pos.coords.latitude, pos.coords.longitude),
+        ()    => doSync(null, null)
+      );
     } else {
-      setIsSynced(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      doSync(null, null);
     }
   };
 
@@ -228,11 +270,16 @@ export default function VoterIntelligenceNode() {
       {!isSynced ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '40px' }}>
           <motion.button onClick={() => setMembers([...members, { id: Date.now(), name: "", fatherName: "", dob: "", age: "", gender: "Male", voterId: "", mobile: "", mood: "Unknown", jobType: "Farmer", jobOther: "", currentCity: "Local", isMigrated: "No" }])} style={{ padding: '16px', borderRadius: '12px', border: '1px dashed #DA251D', background: 'transparent', color: '#DA251D', fontWeight: '900', cursor: 'pointer' }}>+ ADD NEW MEMBER UNIT</motion.button>
-          <motion.button onClick={handleSync} whileTap={{ scale: 0.98 }} style={{ padding: '20px', borderRadius: '15px', border: 'none', background: 'white', color: 'black', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: 'pointer' }}>SYNC & PROTECT DATA <Zap size={18} fill="black" />
+          <motion.button onClick={handleSync} disabled={syncing} whileTap={{ scale: syncing ? 1 : 0.98 }} style={{ padding: '20px', borderRadius: '15px', border: 'none', background: syncing ? '#333' : 'white', color: syncing ? '#aaa' : 'black', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', cursor: syncing ? 'wait' : 'pointer' }}>
+            {syncing ? 'SYNCING...' : 'SYNC & PROTECT DATA'} <Zap size={18} fill={syncing ? '#aaa' : 'black'} />
           </motion.button>
+          {syncMsg && <p style={{ textAlign: 'center', fontSize: '12px', fontWeight: '700', color: syncMsg.startsWith('✅') ? '#22c55e' : '#f87171', marginTop: 4 }}>{syncMsg}</p>}
         </div>
       ) : (
-        <motion.button onClick={() => window.location.reload()} style={{ padding: '20px', borderRadius: '15px', border: '1px solid #00914C', background: 'transparent', color: '#00914C', fontWeight: '900', width: '100%', marginBottom: '40px' }}>START NEW ENTRY</motion.button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '40px' }}>
+          {syncMsg && <p style={{ textAlign: 'center', fontSize: '12px', fontWeight: '700', color: '#22c55e' }}>{syncMsg}</p>}
+          <motion.button onClick={() => window.location.reload()} style={{ padding: '20px', borderRadius: '15px', border: '1px solid #00914C', background: 'transparent', color: '#00914C', fontWeight: '900', width: '100%' }}>START NEW ENTRY</motion.button>
+        </div>
       )}
     </div>
   );
