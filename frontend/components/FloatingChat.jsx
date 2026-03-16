@@ -306,15 +306,26 @@ export default function FloatingChat() {
       )}
       
       {/* ✅ 📱 RESPONSIVE FLOATING BUBBLE */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
-        className={`w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center text-black shadow-2xl transition-all duration-500 hover:scale-110 active:scale-95 relative ${isOpen ? 'bg-white rotate-90 shadow-white/20' : 'bg-[#25d366] shadow-[#25d366]/40'}`}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 relative ${isOpen ? 'rotate-90' : ''}`}
+        style={{
+          background: isOpen
+            ? "rgba(30,30,30,0.97)"
+            : "var(--ems-red, #DA251D)",
+          color: "#fff",
+          border: "1.5px solid rgba(255,255,255,0.15)",
+          boxShadow: isOpen
+            ? "0 2px 12px rgba(0,0,0,0.5)"
+            : "0 2px 14px rgba(218,37,29,0.45)",
+        }}
       >
-        {isOpen ? <X className="w-5 h-5 md:w-8 md:h-8" /> : <MessageCircle className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" />}
-        
+        {isOpen ? <X className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" fill="currentColor" />}
+
         {/* 🔴 Notification Badge */}
         {!isOpen && unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 md:w-6 md:h-6 bg-red-600 border-2 border-[#0b141a] rounded-full flex items-center justify-center text-[8px] md:text-[10px] font-black text-white animate-pulse shadow-lg">
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center text-[8px] font-black animate-pulse shadow-md"
+            style={{ color: "var(--ems-red, #DA251D)" }}>
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
