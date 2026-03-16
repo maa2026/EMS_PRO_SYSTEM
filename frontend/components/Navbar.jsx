@@ -9,7 +9,7 @@ import {
   LayoutDashboard, Map, UserPlus, SatelliteDish, Activity, Landmark,
   UserCog, Vote, Megaphone, Building2, Shield, Crosshair, ChevronDown,
   Radar, ShieldAlert, Star, Zap, Crown, GitBranch, Home, BookOpen,
-  TrendingUp, BarChart3, Award, Sun, Moon
+  TrendingUp, BarChart3, Award, Sun, Moon, Target
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -164,6 +164,7 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = 'dark', toggleTheme }
             {/* ══ 4. LIVE FEATURES ══ */}
             <DD label="Live" width="w-72">
               <SectionLabel label="Real-time Monitoring" />
+              <NavLink href="/war-room"                    icon={Target}        label="Election War Room"        color="text-red-400"     badge="WAR" />
               <NavLink href="/portal/super-admin/tracking" icon={Radar}         label="Live Worker Tracking"   color="text-green-400"  badge="LIVE" />
               <NavLink href="/zone-monitor"                icon={SatelliteDish} label="Zone Monitor — Braj"    color="text-amber-400"  badge="LIVE" />
               <SectionLabel label="Communication" />
@@ -279,6 +280,7 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = 'dark', toggleTheme }
                   {
                     key: 'live', label: 'Live',
                     links: [
+                      { href: '/war-room',                         icon: Target,        label: 'Election War Room',          color: 'text-red-400',    badge: 'WAR' },
                       { href: '/portal/super-admin/tracking',  icon: Radar,         label: 'Live Worker Tracking',      color: 'text-green-400',  badge: 'LIVE' },
                       { href: '/zone-monitor',                 icon: SatelliteDish, label: 'Zone Monitor — Braj',       color: 'text-amber-400',  badge: 'LIVE' },
                       { href: '/chat',                         icon: MessageSquare, label: 'Secure Chat (E2E AES-256)', color: 'text-orange-400', badge: 'NEW' },
