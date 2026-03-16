@@ -10,6 +10,7 @@ import {
   UserCog, Vote, Megaphone, Building2, Shield, Crosshair, ChevronDown,
   Radar, ShieldAlert, Zap, Crown, BookOpen,
   BarChart3, Award, Sun, Moon, Target, Layers,
+  BellRing, Volume2, VolumeX, AlertTriangle, CheckCheck, BellOff,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -79,6 +80,132 @@ const DD = ({ label, icon: TrigIcon, children, width = "w-64", alignRight = fals
   </div>
 );
 
+// ── Siren beep via Web Audio API ─────────────────────────────
+const playSirenBeep = () => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.35, 0.7].forEach((offset) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sawtooth";
+      gain.gain.setValueAtTime(0, ctx.currentTime + offset);
+      gain.gain.linearRampToValueAtTime(0.22, ctx.currentTime + offset + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.32);
+      osc.frequency.setValueAtTime(1320, ctx.currentTime + offset);
+      osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + offset + 0.18);
+      osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + offset + 0.32);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.35);
+    });
+  } catch (e) {}
+};
+
+// ── Mock alert data (replace with socket feed in prod) ─────────
+const INIT_ALERTS = [
+  { id: 1, type: "critical", title: "Worker Offline",    msg: "3 booth workers went offline — Agra Zone, Booth 22",         time: "2m ago",  read: false },
+  { id: 2, type: "critical", title: "Auth Breach Alert", msg: "Failed login attempt on Super Admin portal — IP blocked",    time: "9m ago",  read: false },
+  { id: 3, type: "warning",  title: "Turnout Spike",    msg: "Booth 114, Mathura — turnout crossed 87% threshold",         time: "18m ago", read: false },
+  { id: 4, type: "info",     title: "ES Sync Complete", msg: "Elasticsearch re-index done: 25 Crore voter records synced",  time: "35m ago", read: true  },
+  { id: 5, type: "warning",  title: "Broadcast Sent",   msg: "12,400 field workers acknowledged state-level broadcast",    time: "1h ago",  read: true  },
+];
+
+const ALERT_CLR = {
+  critical: { ring: "text-red-400",   bg: "bg-red-500/10",   border: "border-red-500/20",   dot: "bg-red-500",   pill: "bg-red-500/15 text-red-400"   },
+  warning:  { ring: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", dot: "bg-amber-400", pill: "bg-amber-500/15 text-amber-400" },
+  info:     { ring: "text-blue-400",  bg: "bg-blue-500/10",  border: "border-blue-500/20",  dot: "bg-blue-400",  pill: "bg-blue-500/15 text-blue-400"  },
+};
+const ALERT_ICON = { critical: ShieldAlert, warning: AlertTriangle, info: Activity };
+
+// ── Notification Panel ─────────────────────────────────────────
+const NotifPanel = ({ notifications, soundOn, setSoundOn, markAllRead, onClose }) => {
+  const unread = notifications.filter(n => !n.read).length;
+  return (
+    <div className="absolute right-0 top-[calc(100%+14px)] w-80 border rounded-2xl shadow-[0_28px_56px_rgba(0,0,0,0.65)] backdrop-blur-2xl overflow-hidden z-[400]"
+      style={{ background: "var(--navbar-bg)", borderColor: "var(--border-clr)" }}>
+
+      {/* ── Panel header ── */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
+        <div className="flex items-center gap-3">
+          {/* Siren icon with pulse ring */}
+          <div className="relative">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+              unread > 0 ? "bg-red-500/15" : "bg-white/[0.05]"
+            }`}>
+              {unread > 0
+                ? <BellRing size={15} className="text-red-400 animate-bounce" />
+                : <BellOff  size={15} className="text-gray-500" />}
+            </div>
+            {unread > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 animate-ping opacity-60" />
+            )}
+          </div>
+          <div>
+            <p className="text-[12px] font-black text-white leading-tight">Siren Alerts</p>
+            <p className="text-[9px] text-gray-500 leading-tight">{unread > 0 ? `${unread} unread • action required` : "All clear"}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button onClick={() => setSoundOn(p => !p)}
+            title={soundOn ? "Mute sound alerts" : "Enable sound alerts"}
+            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
+              soundOn ? "bg-amber-500/15 text-amber-400 border border-amber-500/20" : "bg-white/5 text-gray-500 border border-white/10"
+            }`}>
+            {soundOn ? <Volume2 size={12} /> : <VolumeX size={12} />}
+          </button>
+          <button onClick={markAllRead} title="Mark all as read"
+            className="w-7 h-7 rounded-lg flex items-center justify-center bg-white/5 border border-white/10 text-gray-500 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20 transition-all">
+            <CheckCheck size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* ── Status bar ── */}
+      {unread > 0 && (
+        <div className="flex items-center gap-2 px-4 py-2 bg-red-500/[0.06] border-b border-red-500/10">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-[9px] font-black text-red-400 tracking-wider uppercase">Live Siren Active — {unread} Critical</span>
+        </div>
+      )}
+
+      {/* ── Alert list ── */}
+      <div className="max-h-72 overflow-y-auto">
+        {notifications.map(n => {
+          const c = ALERT_CLR[n.type] || ALERT_CLR.info;
+          const Icon = ALERT_ICON[n.type] || Activity;
+          return (
+            <div key={n.id}
+              className={`flex gap-3 px-4 py-3 border-b border-white/[0.04] transition-all duration-200 ${
+                n.read ? "opacity-40" : "hover:bg-white/[0.03]"
+              }`}>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border ${c.bg} ${c.border}`}>
+                <Icon size={12} className={c.ring} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <p className={`text-[10px] font-bold leading-tight ${c.ring}`}>{n.title}</p>
+                  <span className="text-[8px] text-gray-600 shrink-0 mt-0.5">{n.time}</span>
+                </div>
+                <p className="text-[9px] text-gray-500 mt-0.5 leading-relaxed">{n.msg}</p>
+              </div>
+              {!n.read && <div className={`w-1.5 h-1.5 rounded-full ${c.dot} shrink-0 mt-1.5`} />}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Footer ── */}
+      <div className="px-4 py-3 border-t border-white/[0.04]">
+        <Link href="/war-room" onClick={onClose}
+          className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-[9px] text-red-400 hover:bg-red-500/15 font-black tracking-widest uppercase transition-all">
+          <Target size={10} /> Open War Room
+        </Link>
+      </div>
+    </div>
+  );
+};
+
 /* ═══════════════════════════════════════════════════════════════
    MAIN NAVBAR
 ═══════════════════════════════════════════════════════════════ */
@@ -88,12 +215,31 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
   const [hidden, setHidden]             = useState(false);
   const [scrolled, setScrolled]         = useState(false);
   const [mounted, setMounted]           = useState(false);
+  const [notifOpen, setNotifOpen]       = useState(false);
+  const [soundOn, setSoundOn]           = useState(true);
+  const [notifications, setNotifications] = useState(INIT_ALERTS);
   const lastScrollY = useRef(0);
+  const notifRef    = useRef(null);
   const { t } = useTranslation();
   const close = () => setIsOpen(false);
   const toggleSection = (s) => setExpanded(p => p === s ? null : s);
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const openNotif = () => {
+    setNotifOpen(p => !p);
+    if (soundOn && unreadCount > 0 && !notifOpen) playSirenBeep();
+  };
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Close notification panel on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -214,6 +360,35 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
           {/* ── Right: Actions ────────────────────────────────── */}
           <div className="flex items-center gap-2.5 shrink-0">
             <LanguageSwitcher currentLang={currentLang} setLang={setLang} />
+
+            {/* ── Notification Bell ── */}
+            <div ref={notifRef} className="relative">
+              <button onClick={openNotif} title="Alerts & Notifications"
+                className={`relative w-8 h-8 flex items-center justify-center rounded-lg border transition-all shrink-0 ${
+                  unreadCount > 0
+                    ? "bg-red-500/10 border-red-500/25 hover:bg-red-500/20"
+                    : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
+                }`}>
+                <BellRing size={14} className={unreadCount > 0 ? "text-red-400" : "text-gray-400"} />
+                {unreadCount > 0 && (
+                  <>
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center z-10">
+                      <span className="text-[8px] font-black text-white leading-none">{unreadCount > 9 ? "9+" : unreadCount}</span>
+                    </span>
+                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full animate-ping opacity-50" />
+                  </>
+                )}
+              </button>
+              {notifOpen && (
+                <NotifPanel
+                  notifications={notifications}
+                  soundOn={soundOn}
+                  setSoundOn={setSoundOn}
+                  markAllRead={() => setNotifications(p => p.map(n => ({ ...n, read: true })))}
+                  onClose={() => setNotifOpen(false)}
+                />
+              )}
+            </div>
 
             {mounted && toggleTheme && (
               <button onClick={toggleTheme}
