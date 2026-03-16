@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
+import 'leaflet/dist/leaflet.css';
 
 // ── colour helpers ─────────────────────────────────────────────────
 const healthColor = (pct) => {
@@ -22,13 +23,19 @@ export default function WarRoomMap({ level, geoData, statsMap, workers, onDrillD
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (instanceRef.current) {
-      instanceRef.current.remove();
-      instanceRef.current = null;
-    }
+    if (!mapRef.current) return;
 
     const L = require('leaflet');
-    require('leaflet/dist/leaflet.css');
+
+    // Tear down any existing instance (covers React Strict Mode double-invoke)
+    if (instanceRef.current) {
+      try { instanceRef.current.remove(); } catch (_) {}
+      instanceRef.current = null;
+    }
+    // Also clear any stale Leaflet registration on the container element
+    if (mapRef.current._leaflet_id) {
+      try { L.map(mapRef.current).remove(); } catch (_) {}
+    }
 
     const map = L.map(mapRef.current, {
       center: level === 'india' ? [22, 82] : [26.8, 80.9],
@@ -117,7 +124,9 @@ export default function WarRoomMap({ level, geoData, statsMap, workers, onDrillD
     }
 
     return () => {
-      if (instanceRef.current) { instanceRef.current.remove(); instanceRef.current = null; }
+      try {
+        if (instanceRef.current) { instanceRef.current.remove(); instanceRef.current = null; }
+      } catch (_) {}
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geoData, level, selectedId]);

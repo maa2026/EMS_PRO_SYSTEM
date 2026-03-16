@@ -1,7 +1,6 @@
 // @ts-nocheck
 "use client";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { UserPlus, ShieldCheck, Sword } from "lucide-react";
 import { useTranslation } from 'react-i18next';
@@ -44,11 +43,9 @@ export default function Welcome() {
         zIndex: 0
       }}></div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        style={{ zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}
+      <div 
+        style={{ zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", width: "100%",
+          animation: "fadeUp 0.6s ease both" }}
       >
         {/* Header Tagline */}
         <div style={{ 
@@ -84,51 +81,59 @@ export default function Welcome() {
         <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "40px", width: "100%", maxWidth: "320px" }}>
           
           {/* Officer Portal Link */}
-          <motion.button 
-            whileHover={{ scale: 1.02, backgroundColor: "#DA251D", color: "white" }}
-            whileTap={{ scale: 0.98 }}
+          <button 
             onClick={() => router.push('/portal')} 
             style={{ 
               padding: "16px", fontSize: "14px", fontWeight: "900", borderRadius: "100px", border: "none", 
               backgroundColor: "white", color: "black", cursor: "pointer", display: "flex", 
-              alignItems: "center", justifyContent: "center", gap: "10px", boxShadow: "0 15px 30px rgba(0,0,0,0.4)" 
+              alignItems: "center", justifyContent: "center", gap: "10px", boxShadow: "0 15px 30px rgba(0,0,0,0.4)",
+              transition: "background-color 0.2s, transform 0.1s"
             }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = "#DA251D"; e.currentTarget.style.color = "white"; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = "white"; e.currentTarget.style.color = "black"; }}
+            onMouseDown={e => e.currentTarget.style.transform = "scale(0.98)"}
+            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
           >
              {tx('officer_login', 'OFFICER LOGIN')} <ShieldCheck size={18} />
-          </motion.button>
+          </button>
 
           {/* Warriors Node Link */}
-          <motion.button 
-            whileHover={{ scale: 1.02, borderColor: "#DA251D" }}
-            whileTap={{ scale: 0.98 }}
+          <button 
             onClick={() => router.push('/portal/warriors/login')} 
             style={{ 
               padding: "16px", fontSize: "14px", fontWeight: "900", borderRadius: "100px", 
               border: "1px solid rgba(218,37,29,0.5)", backgroundColor: "rgba(218,37,29,0.05)", 
               color: "#DA251D", cursor: "pointer", display: "flex", alignItems: "center", 
-              justifyContent: "center", gap: "10px" 
+              justifyContent: "center", gap: "10px", transition: "border-color 0.2s, transform 0.1s"
             }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = "#DA251D"}
+            onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(218,37,29,0.5)"}
+            onMouseDown={e => e.currentTarget.style.transform = "scale(0.98)"}
+            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
           >
              {tx('warriors_node', 'WARRIORS NODE')} <Sword size={18} />
-          </motion.button>
+          </button>
 
-          {/* ✅ New Enrollment Button (Wapas Add Kiya) */}
-          <motion.button 
-            whileHover={{ scale: 1.02, color: "#00914C", borderColor: "#00914C" }}
-            whileTap={{ scale: 0.98 }}
+          {/* ✅ New Enrollment Button */}
+          <button 
             onClick={() => router.push('/signup')}
             style={{
               padding: "14px", fontSize: "12px", fontWeight: "700", borderRadius: "100px",
               border: "1px solid rgba(255,255,255,0.1)", backgroundColor: "transparent",
               color: "#666", cursor: "pointer", display: "flex", alignItems: "center",
-              justifyContent: "center", gap: "8px", marginTop: "10px"
+              justifyContent: "center", gap: "8px", marginTop: "10px",
+              transition: "color 0.2s, border-color 0.2s, transform 0.1s"
             }}
+            onMouseEnter={e => { e.currentTarget.style.color = "#00914C"; e.currentTarget.style.borderColor = "#00914C"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "#666"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
+            onMouseDown={e => e.currentTarget.style.transform = "scale(0.98)"}
+            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
           >
              {tx('new_enrollment', 'NEW ENROLLMENT')} <UserPlus size={16} />
-          </motion.button>
+          </button>
 
         </div>
-      </motion.div>
+      </div>
 
       {/* Footer Branding */}
        <div style={{ position: "absolute", bottom: "25px", opacity: 0.3, fontSize: "8px", letterSpacing: "3px", fontWeight: "bold" }}>
@@ -136,6 +141,10 @@ export default function Welcome() {
        </div>
 
       <style jsx>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
         @media (max-width: 600px) {
           .hidden-mobile { display: none; }
         }

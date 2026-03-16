@@ -41,8 +41,9 @@ function FlyToWorker({ worker }) {
   const map = useMap();
   useEffect(() => {
     if (worker?.lat != null && worker?.lng != null) {
-      map.flyTo([worker.lat, worker.lng], 15, { duration: 1.0 });
+      try { map.flyTo([worker.lat, worker.lng], 15, { duration: 1.0 }); } catch (_) {}
     }
+    return () => { try { map.stop(); } catch (_) {} };
   }, [worker, map]);
   return null;
 }
@@ -60,8 +61,8 @@ export default function AdminTrackingMap({ workers = [], geoData = null, selecte
     opacity:     0.6,
   });
 
-  /* Key changes force GeoJSON re-render when data updates */
-  const geoKey = workers.length;
+  /* Key only changes when geoData itself changes, not on every worker update */
+  const geoKey = geoData ? (geoData.features?.length ?? 'geo') : 'no-geo';
 
   return (
     <MapContainer
@@ -80,7 +81,7 @@ export default function AdminTrackingMap({ workers = [], geoData = null, selecte
 
       {/* UP district outlines */}
       {geoData && (
-        <GeoJSON key={`geo-${geoKey}`} data={geoData} style={distStyle} />
+        <GeoJSON key={geoKey} data={geoData} style={distStyle} />
       )}
 
       {/* Fly to selected worker */}

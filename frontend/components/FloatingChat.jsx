@@ -50,6 +50,7 @@ const socket = io("http://localhost:5000", {
   reconnectionDelay:    1000,
   reconnectionAttempts: Infinity,
   timeout: 45000,
+  autoConnect: false, // ← don't connect until chat is opened
 });
 
 export default function FloatingChat() {
@@ -86,7 +87,7 @@ export default function FloatingChat() {
       const userId = Cookies.get("userId") || "1";
       const userRole = Cookies.get("userRole") || "L0";
       setIdentity({ id: userId, role: userRole });
-      socket.emit("join_protocol", { userId, userRole });
+      if (socket.connected) socket.emit("join_protocol", { userId, userRole });
     };
     syncIdentity();
   }, []);
@@ -140,7 +141,10 @@ export default function FloatingChat() {
   }, [selectedContact, identity.id, selectedTone, isOpen]);
 
   useEffect(() => {
-    if (isOpen) setUnreadCount(0);
+    if (isOpen) {
+      if (!socket.connected) socket.connect();
+      setUnreadCount(0);
+    }
   }, [isOpen]);
 
   useEffect(() => {

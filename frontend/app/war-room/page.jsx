@@ -3,7 +3,7 @@
 //  EMS WAR ROOM — Full-Stack Election Command Centre
 //  Hierarchy: India → State → District → Constituency → Booth
 // ════════════════════════════════════════════════════════════════
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Radio, Zap, Users, MapPin, Activity, AlertTriangle, CheckCircle,
@@ -84,16 +84,42 @@ const makeStateStats = (name) => {
   };
 };
 
-const UP_CONSTITUENCIES = (district) => {
-  const count = seededRand(district + 'c', 4, 8);
-  return Array.from({ length: count }, (_, i) => {
-    const name = `${district} AC-${seededRand(district + i, 100, 400)}`;
-    const booths = seededRand(name + 'b', 200, 600);
+// ── District name normalisation (GeoJSON uses 2011 census names) ──
+const GEO_TO_DISPLAY = {
+  'Allahabad':                    'Prayagraj',
+  'Faizabad':                     'Ayodhya',
+  'Bara Banki':                   'Barabanki',
+  'Jyotiba Phule Nagar':          'Amroha',
+  'Kansiram Nagar':               'Kasganj',
+  'Kheri':                        'Lakhimpur Kheri',
+  'Mahamaya Nagar':               'Hathras',
+  'Rae Bareli':                   'Raebareli',
+  'Sant Ravi Das Nagar(bhadohi)': 'Bhadohi',
+  'Siddharth Nagar':              'Siddharthnagar',
+};
+const DISPLAY_TO_GEO = Object.fromEntries(Object.entries(GEO_TO_DISPLAY).map(([k, v]) => [v, k]));
+// name (display OR geo) → GeoJSON DIST_NAME uppercase for filtering
+const toGeoDist  = (name) => (DISPLAY_TO_GEO[name] || name).toUpperCase();
+// GeoJSON district name → display name
+const toDisplayDist = (geo) => GEO_TO_DISPLAY[geo] || geo;
+
+// Build real constituency list for a district from GeoJSON (403 actual ACs)
+const getAcForDistrict = (distName, acGeo) => {
+  if (!acGeo?.features) return [];
+  const geoKey = toGeoDist(distName);
+  const features = acGeo.features.filter(f => f.properties.DIST_NAME === geoKey);
+  if (!features.length) return [];
+  return features.map(f => {
+    const name = f.properties.AC_NAME;
+    const totalVoters = seededRand(name + 'v', 150000, 400000);
     const turnout = seededRand(name + 't', 40, 80);
     return {
-      name, booths, turnout,
-      totalVoters: seededRand(name + 'v', 150000, 400000),
-      votesCast: Math.floor(seededRand(name + 'v', 150000, 400000) * turnout / 100),
+      name,
+      acNo: f.properties.AC_NO,
+      booths: seededRand(name + 'b', 200, 600),
+      turnout,
+      totalVoters,
+      votesCast: Math.floor(totalVoters * turnout / 100),
       workers: seededRand(name + 'w', 100, 800),
       alerts: seededRand(name + 'al', 0, 5),
       status: turnout >= 65 ? 'optimal' : turnout >= 50 ? 'stable' : turnout >= 40 ? 'monitor' : 'critical',
@@ -115,16 +141,16 @@ const MOCK_BOOTHS = (constituency) => Array.from({ length: 12 }, (_, i) => {
   };
 });
 
-const MOCK_WORKERS = Array.from({ length: 120 }, (_, i) => {
+// Workers spread across ALL 75 districts, within actual UP bounds (23.87–30.41°N, 77.08–84.63°E)
+const MOCK_WORKERS = Array.from({ length: 240 }, (_, i) => {
   const roles = ['DISTRICT', 'BOOTH_PRES', 'BOOTH_MGR', 'JSS', 'ZONE'];
-  const districts = UP_DISTRICTS.slice(0, 10);
-  const d = districts[i % districts.length];
+  const d = UP_DISTRICTS[i % UP_DISTRICTS.length];
   return {
     workerId: `W${1000 + i}`, name: `Worker ${1000 + i}`,
     role: roles[i % roles.length],
     district: d,
-    lat: 26.0 + (seed(`lat${i}`) % 400) / 100,
-    lng: 79.0 + (seed(`lng${i}`) % 500) / 100,
+    lat: 23.87 + (seed(`lat${i}d`) % 654) / 100,
+    lng: 77.08 + (seed(`lng${i}d`) % 755) / 100,
   };
 });
 
@@ -204,7 +230,7 @@ export default function WarRoom() {
   const [indiaGeo, setIndiaGeo] = useState(null);
   const [upDistGeo, setUpDistGeo] = useState(null);
   const [upAcGeo, setUpAcGeo] = useState(null);
-  const [currentGeo, setCurrentGeo] = useState(null);
+  // currentGeo derived via useMemo — no dep-array size restriction
 
   // Stats
   const [stateStats] = useState(() => Object.fromEntries(INDIA_STATES.map(s => [s, makeStateStats(s)])));
@@ -235,12 +261,19 @@ export default function WarRoom() {
     fetch('/up-constituencies.geojson').then(r => r.json()).then(setUpAcGeo).catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (level === 'india') setCurrentGeo(indiaGeo);
-    else if (level === 'state') setCurrentGeo(upDistGeo);
-    else if (level === 'district') setCurrentGeo(upAcGeo);
-    else setCurrentGeo(null);
-  }, [level, indiaGeo, upDistGeo, upAcGeo]);
+  // ── Derived current GeoJSON (useMemo avoids the useEffect dep-array size problem) ──
+  const currentGeo = useMemo(() => {
+    if (level === 'india') return indiaGeo;
+    if (level === 'state') return upDistGeo;
+    if (level === 'district') {
+      if (!upAcGeo?.features || !selectedKey) return upAcGeo ?? null;
+      const geoKey = toGeoDist(selectedKey);
+      const features = upAcGeo.features.filter(f => f.properties.DIST_NAME === geoKey);
+      return features.length > 0 ? { ...upAcGeo, features } : upAcGeo;
+    }
+    return null;
+  }, [level, indiaGeo, upDistGeo, upAcGeo, selectedKey]);
+
 
   // ── Live clock ──────────────────────────────────────────────────
   useEffect(() => {
@@ -279,9 +312,11 @@ export default function WarRoom() {
       setSelectedKey(name);
       setSearchQ('');
     } else if (level === 'state') {
-      const acs = UP_CONSTITUENCIES(name);
+      // name may be GeoJSON old name (map click) or display name (list click) — both handled
+      const displayName = toDisplayDist(name);
+      const acs = getAcForDistrict(name, upAcGeo);
       setConstituencies(acs);
-      const newBc = [...breadcrumb, { label: name, level: 'district', key: name }];
+      const newBc = [...breadcrumb, { label: displayName, level: 'district', key: name }];
       setBreadcrumb(newBc);
       setLevel('district');
       setSelectedKey(name);
@@ -371,7 +406,17 @@ export default function WarRoom() {
 
   const statsMap = (() => {
     if (level === 'india') return Object.fromEntries(INDIA_STATES.map(s => [s, { turnout: stateStats[s].turnout, workers: stateStats[s].workers, booths: stateStats[s].booths, alerts: stateStats[s].alerts }]));
-    if (level === 'state') return Object.fromEntries(UP_DISTRICTS.map(d => [d, { turnout: districtStats[d].turnout, workers: districtStats[d].totalWorkers, booths: districtStats[d].booths, alerts: districtStats[d].alerts }]));
+    if (level === 'state') {
+      // Key by GeoJSON DISTRICT name (what map polygon properties contain)
+      return Object.fromEntries(UP_DISTRICTS.map(d => {
+        const geoKey = DISPLAY_TO_GEO[d] || d;
+        return [geoKey, { turnout: districtStats[d].turnout, workers: districtStats[d].totalWorkers, booths: districtStats[d].booths, alerts: districtStats[d].alerts }];
+      }));
+    }
+    if (level === 'district') {
+      // Key by AC_NAME (what constituency polygon properties contain)
+      return Object.fromEntries(constituencies.map(c => [c.name, { turnout: c.turnout, workers: c.workers, booths: c.booths, alerts: c.alerts }]));
+    }
     return {};
   })();
 
@@ -428,11 +473,11 @@ export default function WarRoom() {
           <div className="flex items-center gap-2 shrink-0">
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg" style={{ background: 'var(--surface)', border: '1px solid var(--border-clr)' }}>
               <Clock size={11} className="text-gray-400" />
-              <span className="text-[11px] font-black text-gray-300 tabular-nums">
+              <span suppressHydrationWarning className="text-[11px] font-black text-gray-300 tabular-nums">
                 {systemTime.toLocaleTimeString('en-IN', { hour12: false })}
               </span>
             </div>
-            <div className="text-[9px] text-gray-500 hidden md:block">
+            <div suppressHydrationWarning className="text-[9px] text-gray-500 hidden md:block">
               {systemTime.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
             <div className="flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.15)' }}>
