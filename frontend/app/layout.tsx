@@ -1,5 +1,5 @@
 // @ts-nocheck
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ClientProviders from "../components/ClientProviders";
@@ -14,7 +14,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "EMS.UP - Election Management System",
   description: "Advanced Digital Governance for UP Elections 2026",
-  viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

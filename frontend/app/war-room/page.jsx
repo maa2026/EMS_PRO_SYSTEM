@@ -11,7 +11,7 @@ import {
   TrendingUp, TrendingDown, Wifi, WifiOff, Bell, BellOff, Shield,
   RefreshCw, Maximize2, Minimize2, Crosshair, MessageSquare, X,
   BarChart3, Clock, Thermometer, ArrowUpRight, ArrowDownRight,
-  ChevronDown, SatelliteDish, Target, Flag, Siren, Send
+  ChevronDown, SatelliteDish, Target, Flag, Siren, Send, LogOut
 } from 'lucide-react';
 
 // Dynamic import — no SSR (Leaflet needs browser)
@@ -219,6 +219,14 @@ const ACTIVITY_TEMPLATES = [
 //  MAIN WAR ROOM PAGE
 // ════════════════════════════════════════════════════════════════
 export default function WarRoom() {
+  const [userName, setUserName] = useState("");
+  useEffect(() => { setUserName(localStorage.getItem("userName") || ""); }, []);
+  const handleLogout = () => {
+    ["userId","userRole","userName","userDistrict","userBoothNo","userConstituency","userZone","userEmsId","userRoleLabel"]
+      .forEach(k => localStorage.removeItem(k));
+    ["userId","userRole","userName"].forEach(k => { document.cookie = `${k}=; max-age=0; path=/`; });
+    window.location.href = "/login";
+  };
   // Navigation state
   const [level, setLevel] = useState('india');        // india|state|district|constituency|booth
   const [breadcrumb, setBreadcrumb] = useState([{ label: 'India', level: 'india', key: 'india' }]);
@@ -484,6 +492,16 @@ export default function WarRoom() {
               <Wifi size={11} className="text-green-400" />
               <span className="text-[9px] font-black text-green-400">ONLINE</span>
             </div>
+            {userName && <span className="text-[9px] text-gray-400 hidden md:block font-semibold">{userName}</span>}
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-red-400 hover:bg-red-600/10 transition-all"
+              style={{ border: '1px solid rgba(218,37,29,0.2)' }}
+            >
+              <LogOut size={11} />
+              <span className="text-[9px] font-black hidden sm:block">Logout</span>
+            </button>
           </div>
         </div>
 

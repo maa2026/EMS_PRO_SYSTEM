@@ -30,17 +30,32 @@ export default function LoginPage() {
 
       if (data.success) {
         const expiry = "; max-age=" + 7 * 24 * 60 * 60 + "; path=/";
-        document.cookie = "userId=" + data.user.id + expiry;
+        document.cookie = "userId="   + data.user.id   + expiry;
         document.cookie = "userRole=" + data.user.role + expiry;
-        document.cookie = "userName=" + data.user.name + expiry;
-        localStorage.setItem("userRole",     data.user.role);
-        localStorage.setItem("userName",     data.user.name);
-        localStorage.setItem("userId",       data.user.id);
-        localStorage.setItem("userDistrict", data.user.district || "");
-        localStorage.setItem("userBoothNo",  data.user.boothNo  || "");
+        document.cookie = "userName=" + encodeURIComponent(data.user.name) + expiry;
 
-        let targetPath = "/dashboard/admin/main";
-        if (data.user.role === "L6") targetPath = "/dashboard/search-booth";
+        localStorage.setItem("userId",           data.user.id           || "");
+        localStorage.setItem("userRole",         data.user.role         || "");
+        localStorage.setItem("userName",         data.user.name         || "");
+        localStorage.setItem("userRoleLabel",    data.user.roleLabel    || "");
+        localStorage.setItem("userZone",         data.user.zone         || "");
+        localStorage.setItem("userDistrict",     data.user.district     || "");
+        localStorage.setItem("userConstituency", data.user.constituency || "");
+        localStorage.setItem("userBoothNo",      data.user.boothNo      || "");
+        localStorage.setItem("userEmsId",        data.user.emsId        || "");
+
+        // Role → Dashboard routing
+        const ROLE_ROUTES: Record<string, string> = {
+          L0: "/dashboard/admin/main",              // Super Admin
+          L1: "/dashboard/admin/state",             // State Admin
+          L2: "/zone-monitor",                      // Zone Admin
+          L3: "/district-admin",                    // District Admin
+          L4: "/dashboard/constituency",           // Constituency Prabhari
+          L5: "/warriors-node",                     // Booth President
+          L6: "/warriors-node",                     // Booth Manager
+          L7: "/jan-sampark/voter-intelligence",    // Jan Sampark Sathi
+        };
+        const targetPath = ROLE_ROUTES[data.user.role] || "/dashboard/admin/main";
 
         window.location.href = window.location.origin + targetPath;
       } else {

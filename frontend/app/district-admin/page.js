@@ -1,8 +1,23 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { LogOut } from 'lucide-react';
 
 export default function DistrictAdminPortal() {
   const [activeTab, setActiveTab] = useState('Pending');
+  const [userName, setUserName] = useState("");
+  const [userDistrict, setUserDistrict] = useState("");
+
+  useEffect(() => {
+    setUserName(localStorage.getItem("userName") || "");
+    setUserDistrict(localStorage.getItem("userDistrict") || "");
+  }, []);
+
+  const handleLogout = () => {
+    ["userId","userRole","userName","userDistrict","userBoothNo","userConstituency","userZone","userEmsId","userRoleLabel"]
+      .forEach(k => localStorage.removeItem(k));
+    ["userId","userRole","userName"].forEach(k => { document.cookie = `${k}=; max-age=0; path=/`; });
+    window.location.href = "/login";
+  };
 
   // Dummy data for verification queue
   const [applicants, setApplicants] = useState([
@@ -23,9 +38,18 @@ export default function DistrictAdminPortal() {
             </h1>
             <p className="text-[10px] text-gray-500 uppercase font-bold tracking-[0.4em] mt-1 italic">Level 1: Physical & Document Verification</p>
           </div>
-          <div className="bg-white/5 border border-white/10 p-4 rounded-3xl text-right">
-             <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest italic">Current District</p>
-             <p className="text-xl font-black text-white italic uppercase">MAINPURI</p>
+          <div className="flex items-end gap-4">
+            <div className="bg-white/5 border border-white/10 p-4 rounded-3xl text-right">
+               <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest italic">Current District</p>
+               <p className="text-xl font-black text-white italic uppercase">{userDistrict || "—"}</p>
+               <p className="text-[9px] text-gray-400 font-semibold mt-0.5">{userName}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-red-400 bg-red-600/10 border border-red-600/20 hover:bg-red-600/20 transition-all mb-1"
+            >
+              <LogOut size={14} /> Logout
+            </button>
           </div>
         </div>
 

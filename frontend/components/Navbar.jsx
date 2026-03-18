@@ -11,6 +11,7 @@ import {
   Radar, ShieldAlert, Zap, Crown, BookOpen,
   BarChart3, Award, Sun, Moon, Target, Layers,
   BellRing, Volume2, VolumeX, AlertTriangle, CheckCheck, BellOff,
+  LogOut, User, Home,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -223,6 +224,51 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
   const { t } = useTranslation();
   const close = () => setIsOpen(false);
   const toggleSection = (s) => setExpanded(p => p === s ? null : s);
+
+  // ── Logged-in user state ─────────────────────────────────────
+  const [loggedIn,     setLoggedIn]     = useState(false);
+  const [userName,     setUserName]     = useState("");
+  const [userRole,     setUserRole]     = useState("");
+  const [userRoleLabel,setUserRoleLabel]= useState("");
+  const [userDistrict, setUserDistrict] = useState("");
+  const [userEmsId,    setUserEmsId]    = useState("");
+
+  const ROLE_HOME = {
+    L0: "/dashboard/admin/main",
+    L1: "/dashboard/admin/state",
+    L2: "/zone-monitor",
+    L3: "/district-admin",
+    L4: "/dashboard/constituency",
+    L5: "/warriors-node",
+    L6: "/warriors-node",
+    L7: "/jan-sampark/voter-intelligence",
+    admin: "/admin",
+    "super-admin": "/dashboard/admin/main",
+  };
+
+  useEffect(() => {
+    const role = localStorage.getItem("userRole") || "";
+    const name = localStorage.getItem("userName") || "";
+    if (role && name) {
+      setLoggedIn(true);
+      setUserName(name);
+      setUserRole(role);
+      setUserRoleLabel(localStorage.getItem("userRoleLabel") || role);
+      setUserDistrict(localStorage.getItem("userDistrict") || "");
+      setUserEmsId(localStorage.getItem("userEmsId") || "");
+    }
+  }, []);
+
+  const handleLogout = () => {
+    ["userId","userRole","userName","userDistrict","userBoothNo",
+     "userConstituency","userZone","userEmsId","userRoleLabel"]
+      .forEach(k => localStorage.removeItem(k));
+    ["userId","userRole","userName"].forEach(k => {
+      document.cookie = `${k}=; max-age=0; path=/`;
+    });
+    setLoggedIn(false); setUserName(""); setUserRole("");
+    window.location.href = "/login";
+  };
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const openNotif = () => {
@@ -312,17 +358,19 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
             </DD>
 
             {/* ── 2. COMMAND — Dashboards ── */}
-            <DD label="Command" icon={LayoutDashboard} width="w-72">
+            <DD label="Command" icon={LayoutDashboard} width="w-80">
               <div className="py-2">
-                <SectionLabel label="Admin Dashboards" />
-                <NavLink href="/dashboard/admin/main"         icon={LayoutDashboard} label="Super Admin Dashboard"  color="text-red-400" />
-                <NavLink href="/dashboard/admin/state"        icon={Map}             label="State Admin Panel"       color="text-purple-400" />
-                <NavLink href="/district-admin"               icon={Building2}       label="District Admin Panel"    color="text-blue-400" />
-                <NavLink href="/zone-monitor"                 icon={SatelliteDish}   label="Zone Monitor — Braj"     color="text-amber-400" />
-                <NavLink href="/portal/jan-sampark/dashboard" icon={Megaphone}       label="Jan Sampark Dashboard"   color="text-emerald-400" badge="LIVE" />
+                <SectionLabel label="Dashboards" />
+                <NavLink href="/dashboard/admin/main"          icon={ShieldAlert}     label="Super Admin"             sublabel="L0 Supreme Command"      color="text-red-400"     badge="L0" />
+                <NavLink href="/dashboard/admin/state"         icon={Crown}           label="State Admin"             sublabel="L1 State Command"        color="text-purple-400" badge="L1" />
+                <NavLink href="/zone-monitor"                  icon={SatelliteDish}   label="Zone Monitor"            sublabel="L2 Zone Command"         color="text-amber-400" badge="L2" />
+                <NavLink href="/district-admin"                icon={Building2}       label="District Admin"          sublabel="L3 District Node"        color="text-blue-400"   badge="L3" />
+                <NavLink href="/dashboard/constituency"        icon={Landmark}        label="Constituency Prabhari"   sublabel="L4 Vidhayak Area"        color="text-cyan-400"   badge="L4" />
+                <NavLink href="/warriors-node"                 icon={Award}           label="Warriors Node"           sublabel="L5/L6 Booth Command"     color="text-green-400" badge="L5" />
+                <NavLink href="/jan-sampark/voter-intelligence" icon={Megaphone}      label="Jan Sampark Sathi"       sublabel="L7 Ground Intelligence"  color="text-emerald-400" badge="L7" />
                 <SectionLabel label="Administration" />
-                <NavLink href="/admin"  icon={UserCog} label="Admin Control Panel" color="text-orange-400" />
-                <NavLink href="/portal" icon={Shield}  label="Master Portal"       color="text-gray-300" />
+                <NavLink href="/admin"   icon={UserCog} label="Admin Control Panel" color="text-orange-400" />
+                <NavLink href="/war-room" icon={Target}  label="Election War Room"   color="text-red-400"   badge="WAR" />
               </div>
             </DD>
 
@@ -344,6 +392,7 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
               <div className="py-2">
                 <SectionLabel label="Monitoring & Command" />
                 <NavLink href="/war-room"                    icon={Target}        label="Election War Room"       color="text-red-400"    badge="WAR" />
+                <NavLink href="/social-intelligence"         icon={Activity}      label="Social Media Intel"      sublabel="Akhilesh Yadav · SP 2026" color="text-pink-400"   badge="LIVE" />
                 <NavLink href="/portal/super-admin/tracking" icon={Radar}         label="Live Worker Tracking"    color="text-green-400"  badge="LIVE" />
                 <NavLink href="/zone-monitor"                icon={SatelliteDish} label="Zone Monitor — Braj"     color="text-amber-400"  badge="LIVE" />
                 <NavLink href="/citizen"                     icon={UserPlus}      label="Citizen Grievance"       color="text-cyan-400"   badge="NEW" />
@@ -400,16 +449,48 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
               </button>
             )}
 
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase">Secure</span>
-            </div>
-
-            <Link href="/login"
-              className="flex items-center gap-2 bg-gradient-to-r from-[#DA251D] to-[#b01e17] hover:from-[#c0211a] hover:to-[#9a1a13] text-white px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase shadow-lg shadow-[#DA251D]/20 active:scale-95 transition-all duration-200 border border-white/10">
-              <Lock size={11} />
-              {mounted ? t("login") : "Login"}
-            </Link>
+            {/* ── User info pill / Login button ── */}
+            {mounted && loggedIn ? (
+              <div className="flex items-center gap-2">
+                {/* Dashboard quick-link */}
+                <Link
+                  href={ROLE_HOME[userRole] || "/login"}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07] transition-all text-[10px] font-black tracking-wider text-white/70 uppercase"
+                  title="Go to my dashboard">
+                  <Home size={11} />
+                  Dashboard
+                </Link>
+                {/* User badge */}
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border bg-white/[0.03]"
+                  style={{ borderColor: "var(--border-clr)" }}>
+                  <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-wider ${badgeCls(userRole)}`}>
+                    {userRole}
+                  </span>
+                  <span className="text-[10px] font-semibold text-white/70 max-w-[90px] truncate hidden md:block">{userName}</span>
+                </div>
+                {/* Logout */}
+                <button
+                  onClick={handleLogout}
+                  title="Logout"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all shrink-0">
+                  <LogOut size={14} />
+                </button>
+              </div>
+            ) : mounted ? (
+              <>
+                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[9px] font-black text-emerald-400 tracking-widest uppercase">Secure</span>
+                </div>
+                <Link href="/login"
+                  className="flex items-center gap-2 bg-gradient-to-r from-[#DA251D] to-[#b01e17] hover:from-[#c0211a] hover:to-[#9a1a13] text-white px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase shadow-lg shadow-[#DA251D]/20 active:scale-95 transition-all duration-200 border border-white/10">
+                  <Lock size={11} />
+                  {t("login")}
+                </Link>
+              </>
+            ) : (
+              <div className="w-20 h-8 rounded-xl bg-white/5 animate-pulse" />
+            )}
 
             <button onClick={() => setIsOpen(!isOpen)}
               className="lg:hidden w-9 h-9 flex items-center justify-center text-white hover:bg-white/5 rounded-xl transition-all border border-white/10">
@@ -462,13 +543,15 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
                   {
                     key: "command", label: "Command", icon: LayoutDashboard,
                     links: [
-                      { href: "/dashboard/admin/main",          icon: LayoutDashboard, label: "Super Admin Dashboard", color: "text-red-400" },
-                      { href: "/dashboard/admin/state",         icon: Map,             label: "State Admin Panel",     color: "text-purple-400" },
-                      { href: "/district-admin",                icon: Building2,       label: "District Admin Panel",  color: "text-blue-400" },
-                      { href: "/zone-monitor",                  icon: SatelliteDish,   label: "Zone Monitor",          color: "text-amber-400" },
-                      { href: "/portal/jan-sampark/dashboard",  icon: Megaphone,       label: "Jan Sampark Dashboard", color: "text-emerald-400", badge: "LIVE" },
-                      { href: "/admin",                         icon: UserCog,         label: "Admin Control Panel",   color: "text-orange-400" },
-                      { href: "/portal",                        icon: Shield,          label: "Master Portal",         color: "text-gray-300" },
+                      { href: "/dashboard/admin/main",           icon: ShieldAlert,   label: "Super Admin",            sublabel: "L0", color: "text-red-400",     badge: "L0" },
+                      { href: "/dashboard/admin/state",          icon: Crown,         label: "State Admin",            sublabel: "L1", color: "text-purple-400", badge: "L1" },
+                      { href: "/zone-monitor",                   icon: SatelliteDish, label: "Zone Monitor",           sublabel: "L2", color: "text-amber-400", badge: "L2" },
+                      { href: "/district-admin",                 icon: Building2,     label: "District Admin",         sublabel: "L3", color: "text-blue-400",   badge: "L3" },
+                      { href: "/dashboard/constituency",         icon: Landmark,      label: "Constituency Prabhari",  sublabel: "L4", color: "text-cyan-400",   badge: "L4" },
+                      { href: "/warriors-node",                  icon: Award,         label: "Warriors Node",          sublabel: "L5/L6", color: "text-green-400", badge: "L5" },
+                      { href: "/jan-sampark/voter-intelligence", icon: Megaphone,     label: "Jan Sampark Sathi",      sublabel: "L7", color: "text-emerald-400", badge: "L7" },
+                      { href: "/admin",                          icon: UserCog,       label: "Admin Control Panel",    color: "text-orange-400" },
+                      { href: "/war-room",                       icon: Target,        label: "Election War Room",      color: "text-red-400", badge: "WAR" },
                     ],
                   },
                   {
@@ -485,6 +568,7 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
                     key: "live", label: "Live Ops", icon: Radar,
                     links: [
                       { href: "/war-room",                         icon: Target,        label: "Election War Room",    color: "text-red-400",    badge: "WAR" },
+                      { href: "/social-intelligence",              icon: Activity,      label: "Social Media Intel",   color: "text-pink-400",   badge: "LIVE" },
                       { href: "/portal/super-admin/tracking",      icon: Radar,         label: "Live Worker Tracking", color: "text-green-400",  badge: "LIVE" },
                       { href: "/zone-monitor",                     icon: SatelliteDish, label: "Zone Monitor",         color: "text-amber-400",  badge: "LIVE" },
                       { href: "/citizen",                          icon: UserPlus,      label: "Citizen Grievance",    color: "text-cyan-400",   badge: "NEW" },
@@ -517,11 +601,32 @@ const Navbar = ({ currentLang, setLang, openLogin, theme = "dark", toggleTheme }
               </div>
 
               {/* Mobile CTA */}
-              <div className="p-4 border-t border-white/[0.05]">
-                <Link href="/login" onClick={close}
-                  className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#DA251D] to-[#b01e17] text-white py-3 rounded-xl text-[11px] font-black tracking-widest uppercase shadow-lg shadow-[#DA251D]/20 active:scale-95 transition-transform">
-                  <Lock size={12} /> {mounted ? t("login") : "Login"}
-                </Link>
+              <div className="p-4 border-t border-white/[0.05] flex flex-col gap-2">
+                {loggedIn ? (
+                  <>
+                    {/* Logged-in user info strip */}
+                    <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08]">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full tracking-wider ${badgeCls(userRole)}`}>{userRole}</span>
+                        <span className="text-[11px] font-semibold text-white truncate max-w-[150px]">{userName}</span>
+                      </div>
+                      <span className="text-[9px] text-white/30 font-semibold truncate max-w-[80px]">{userDistrict}</span>
+                    </div>
+                    <Link href={ROLE_HOME[userRole] || "/login"} onClick={close}
+                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#DA251D] to-[#b01e17] text-white py-3 rounded-xl text-[11px] font-black tracking-widest uppercase shadow-lg shadow-[#DA251D]/20 active:scale-95 transition-transform">
+                      <Home size={12} /> My Dashboard
+                    </Link>
+                    <button onClick={() => { close(); handleLogout(); }}
+                      className="flex items-center justify-center gap-2 w-full border border-red-500/30 text-red-400 bg-red-500/10 py-2.5 rounded-xl text-[11px] font-black tracking-widest uppercase hover:bg-red-500/20 transition-all">
+                      <LogOut size={12} /> Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/login" onClick={close}
+                    className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#DA251D] to-[#b01e17] text-white py-3 rounded-xl text-[11px] font-black tracking-widest uppercase shadow-lg shadow-[#DA251D]/20 active:scale-95 transition-transform">
+                    <Lock size={12} /> {mounted ? t("login") : "Login"}
+                  </Link>
+                )}
               </div>
             </div>
           )}

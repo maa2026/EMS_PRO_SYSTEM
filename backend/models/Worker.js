@@ -24,10 +24,13 @@ const WorkerSchema = new mongoose.Schema({
   pincode:       String,
 
   // Organization & Location
+  zone:          { type: String, index: true },
   district:      { type: String, required: true, index: true },
   constituency:  String,
   boothNo:       Number,
-  role:          { type: String, enum: ['BP', 'BM', 'JSS'], index: true },
+  // L0=SuperAdmin, L1=State, L2=Zone, L3=District, L4=Constituency, L5=BP, L6=BM, L7=JSS
+  role:          { type: String, enum: ['L0','L1','L2','L3','L4','L5','L6','L7','BP','BM','JSS'], index: true },
+  password:      { type: String, default: null },
 
   // Identity & Education
   voterId:       String,

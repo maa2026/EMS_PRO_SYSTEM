@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { Map, ShieldAlert, Lock, BarChart3, ChevronRight, Globe, Zap, Wifi, WifiOff, RefreshCw } from "lucide-react";
+import { Map, ShieldAlert, Lock, BarChart3, ChevronRight, Globe, Zap, Wifi, WifiOff, RefreshCw, LogOut } from "lucide-react";
 
 // Load Leaflet map only on client (no SSR)
 const LiveMap = dynamic(() => import('@/components/LiveMap'), {
@@ -25,6 +25,20 @@ const DISTRICT_META = {
 
 export default function ZoneMonitor() {
   const [accessRequested, setAccessRequested] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userZone, setUserZone] = useState("");
+
+  useEffect(() => {
+    setUserName(localStorage.getItem("userName") || "");
+    setUserZone(localStorage.getItem("userZone") || "");
+  }, []);
+
+  const handleLogout = () => {
+    ["userId","userRole","userName","userDistrict","userBoothNo","userConstituency","userZone","userEmsId","userRoleLabel"]
+      .forEach(k => localStorage.removeItem(k));
+    ["userId","userRole","userName"].forEach(k => { document.cookie = `${k}=; max-age=0; path=/`; });
+    window.location.href = "/login";
+  };
 
   // Live presence from Redis heartbeat API
   const [liveData,       setLiveData]       = useState(null);   // { total, byDistrict, workers }
@@ -82,10 +96,10 @@ export default function ZoneMonitor() {
             </div>
             <div>
               <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
-                BRAJ <span className="text-red-600">ZONE</span> NODE
+                {userZone || "ZONE"} <span className="text-red-600">MONITOR</span> NODE
               </h1>
               <p className="text-[10px] text-gray-500 uppercase font-black tracking-[0.6em] mt-3 italic flex items-center gap-2">
-                <Lock size={12} className="text-yellow-600" /> Administrative Monitoring Level: 02
+                <Lock size={12} className="text-yellow-600" /> L2 Zone Admin &bull; {userName || "Zone Admin"}
               </p>
             </div>
           </div>
@@ -117,6 +131,12 @@ export default function ZoneMonitor() {
               }`}
             >
               {accessRequested ? "Waiting for Supreme Bypass..." : "Request Global Edit Access"}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-red-400 bg-red-600/10 border border-red-600/20 hover:bg-red-600/20 transition-all"
+            >
+              <LogOut size={14} /> Logout
             </button>
           </div>
         </div>
@@ -154,7 +174,7 @@ export default function ZoneMonitor() {
               </div>
               <div>
                 <h2 className="text-xl font-black italic uppercase tracking-widest text-red-600">Live Worker GPS Map</h2>
-                <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest italic mt-1">BRAJ Zone · Real-time Heartbeat Overlay</p>
+                <p className="text-[9px] text-gray-600 uppercase font-black tracking-widest italic mt-1">{userZone || "Zone"} · Real-time Heartbeat Overlay</p>
               </div>
             </div>
             <div className="text-right">

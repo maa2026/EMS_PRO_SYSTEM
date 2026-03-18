@@ -254,12 +254,27 @@ app.get('/api/booths', async (req, res) => {
     const limit = 50; 
     const skip = (Math.max(1, parseInt(page)) - 1) * limit;
 
+    // District name aliases — frontend name → MongoDB districtName
+    const DISTRICT_ALIASES = {
+      'lakhimpur kheri': 'Kheri',
+      'shravasti': 'Shrawasti',
+    };
     let query = {};
-    if (district) query.districtName = { $regex: new RegExp(district.trim(), 'i') };
-    if (constituency) {
-      let conName = constituency.trim();
-      if (conName.includes(' - ')) conName = conName.split(' - ')[1].trim();
-      query.acName = { $regex: new RegExp(conName, 'i') };
+    if (district) {
+      const distKey = district.trim().toLowerCase();
+      const distName = DISTRICT_ALIASES[distKey] || district.trim();
+      query.districtName = { $regex: new RegExp(distName, 'i') };
+    }
+    if (constituency && constituency.trim() !== 'All AC Numbers' && constituency.trim() !== '') {
+      const conStr = constituency.trim();
+      // Extract AC number from format "107 - Mainpuri" — use acNo for exact match (avoids name spelling mismatches)
+      const acNoMatch = conStr.match(/^(\d+)\s*[-–]/);
+      if (acNoMatch) {
+        query.acNo = parseInt(acNoMatch[1]);
+      } else {
+        // Fallback: name-based search
+        query.acName = { $regex: new RegExp(conStr.replace(/\s+/g, '\\s*').replace(/-/g, '[\\s-]*'), 'i') };
+      }
     }
     if (search) {
       const sTrim = search.trim();

@@ -1,8 +1,21 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { LogOut } from 'lucide-react';
 
 export default function StateAdminPortal() {
   const [activeDistrict, setActiveDistrict] = useState('All Districts');
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    setUserName(localStorage.getItem("userName") || "State Admin");
+  }, []);
+
+  const handleLogout = () => {
+    ["userId","userRole","userName","userDistrict","userBoothNo","userConstituency","userZone","userEmsId","userRoleLabel"]
+      .forEach(k => localStorage.removeItem(k));
+    ["userId","userRole","userName"].forEach(k => { document.cookie = `${k}=; max-age=0; path=/`; });
+    window.location.href = "/login";
+  };
 
   const applicants = [
     { id: "EMS-UP-101", name: "Ramesh Yadav", role: "Jan Sampark Sathi", district: "Mainpuri", distVerifiedBy: "Unit-04", status: "Pending" },
@@ -21,9 +34,18 @@ export default function StateAdminPortal() {
             </h1>
             <p className="text-xs text-gray-500 uppercase font-bold tracking-[0.6em] mt-3">Level 2: Secondary Verification & Fraud Detection</p>
           </div>
-          <div className="flex flex-col items-end">
-             <span className="text-[10px] text-red-600 font-black uppercase tracking-widest mb-1">Authorization Layer</span>
+          <div className="flex flex-col items-end gap-2">
+             <span className="text-[10px] text-red-600 font-black uppercase tracking-widest">Authorization Layer</span>
              <span className="bg-white/5 px-6 py-2 rounded-2xl border border-white/10 text-sm font-black italic uppercase tracking-widest">UP State Command Center</span>
+             <div className="flex items-center gap-3 mt-1">
+               <span className="text-[10px] text-gray-400 font-semibold">{userName}</span>
+               <button
+                 onClick={handleLogout}
+                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-red-400 bg-red-600/10 border border-red-600/20 hover:bg-red-600/20 transition-all"
+               >
+                 <LogOut size={12} /> Logout
+               </button>
+             </div>
           </div>
         </div>
 

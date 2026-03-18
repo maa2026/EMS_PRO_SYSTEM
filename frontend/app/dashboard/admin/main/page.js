@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from 'react';
-import { ShieldCheck, Globe, Clock, UserCheck, Activity, AlertTriangle, ShieldAlert } from "lucide-react";
+import { ShieldCheck, Globe, Clock, UserCheck, Activity, AlertTriangle, ShieldAlert, LogOut } from "lucide-react";
 
 export default function SuperAdminPortal() {
   const [activeFilter,     setActiveFilter]     = useState('Pending');
@@ -8,7 +8,19 @@ export default function SuperAdminPortal() {
   const [onlineStats,      setOnlineStats]      = useState({ total: 0, loading: true });
   const [candidates,       setCandidates]       = useState([]);
   const [candLoading,      setCandLoading]       = useState(true);
-  
+  const [userName,         setUserName]         = useState("");
+
+  useEffect(() => {
+    setUserName(localStorage.getItem("userName") || "Super Admin");
+  }, []);
+
+  const handleLogout = () => {
+    ["userId","userRole","userName","userDistrict","userBoothNo","userConstituency","userZone","userEmsId","userRoleLabel"]
+      .forEach(k => localStorage.removeItem(k));
+    ["userId","userRole","userName"].forEach(k => { document.cookie = `${k}=; max-age=0; path=/`; });
+    window.location.href = "/login";
+  };
+
   // Permission Requests State
   const [permRequests, setPermRequests] = useState([
     { id: 1, node: "AC-109 Unit", requester: "Unit Manager", zone: "Braj Zone", time: "2 mins ago" },
@@ -79,8 +91,20 @@ export default function SuperAdminPortal() {
             </h1>
             <p className="text-[10px] text-gray-500 uppercase font-black tracking-[1em] mt-4 italic underline decoration-red-600">SAMAJWADI CLOUD Intelligence 2026</p>
           </div>
-          <div className="bg-red-600 px-8 py-4 rounded-3xl font-black italic uppercase tracking-widest shadow-[0_0_40px_rgba(220,38,38,0.3)] border border-white/20">
-            SYSTEM ACTIVE
+          <div className="flex items-center gap-3">
+            <div className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl text-right">
+              <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">Logged in as</p>
+              <p className="text-sm font-black text-white">{userName}</p>
+            </div>
+            <div className="bg-red-600 px-6 py-3 rounded-2xl font-black italic uppercase tracking-widest shadow-[0_0_40px_rgba(220,38,38,0.3)] border border-white/20 text-sm">
+              SYSTEM ACTIVE
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-red-400 bg-red-600/10 border border-red-600/20 hover:bg-red-600/20 transition-all"
+            >
+              <LogOut size={14} /> Logout
+            </button>
           </div>
         </div>
 
